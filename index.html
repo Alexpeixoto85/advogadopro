@@ -306,6 +306,60 @@ tbody tr:last-child td{border-bottom:none}
 }
 @media(max-width:520px){.kpi-grid{grid-template-columns:1fr}}
 
+/* ===== Auth screen ===== */
+#authScreen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.auth-box{background:var(--surface);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.4);width:100%;max-width:400px;overflow:hidden;animation:pop .35s cubic-bezier(.2,.8,.3,1);margin:auto}
+.auth-header{background:linear-gradient(150deg,var(--ink),var(--ink-soft));padding:20px 28px 16px;text-align:center;display:flex;align-items:center;gap:14px}
+.auth-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(150deg,var(--brass),var(--brass-deep));display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 14px rgba(176,131,50,.4)}
+.auth-logo svg{width:22px;height:22px}
+.auth-header-text{text-align:left}
+.auth-header h1{font-family:var(--serif);font-size:22px;font-weight:600;color:#fff;letter-spacing:.3px;line-height:1}
+.auth-header p{font-size:11px;color:var(--brass-soft);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+.auth-tabs{display:flex;border-bottom:1px solid var(--line)}
+.auth-tab{flex:1;padding:11px;font-size:13.5px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-left:none;border-right:none;border-top:none}
+.auth-tab.active{color:var(--brass-deep);border-bottom-color:var(--brass)}
+.auth-body{padding:18px 24px 22px}
+.auth-field{margin-bottom:11px}
+.auth-field label{font-size:12px;font-weight:600;color:var(--text);display:block;margin-bottom:4px}
+.auth-field input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);font-size:13.5px;outline:none;transition:border .15s,box-shadow .15s;font-family:inherit}
+.auth-field input:focus{border-color:var(--brass);box-shadow:0 0 0 3px rgba(176,131,50,.12);background:var(--surface)}
+.auth-btn{width:100%;padding:11px;background:linear-gradient(150deg,var(--brass),var(--brass-deep));color:#fff;border-radius:10px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:box-shadow .15s,transform .12s;box-shadow:0 4px 14px rgba(176,131,50,.3);margin-top:4px}
+.auth-btn:hover{box-shadow:0 6px 20px rgba(176,131,50,.45);transform:translateY(-1px)}
+.auth-btn:active{transform:translateY(0)}
+.auth-err{background:var(--red-bg);color:var(--red);border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;margin-bottom:10px;display:none}
+.auth-err.show{display:block}
+.auth-role{display:flex;gap:6px;margin-bottom:11px}
+.auth-role label{flex:1;cursor:pointer}
+.auth-role input{display:none}
+.auth-role-btn{display:block;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:600;color:var(--text-2);transition:all .15s;background:var(--surface-2)}
+.auth-role input:checked+.auth-role-btn{border-color:var(--brass);background:var(--amber-bg);color:var(--brass-deep)}
+/* User info in topbar */
+.user-chip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:7px 13px;cursor:pointer;transition:border .15s;position:relative}
+.user-chip:hover{border-color:var(--brass)}
+.user-chip .uc-av{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--brass-soft);display:grid;place-items:center;font-family:var(--serif);font-size:12px;font-weight:700;flex-shrink:0}
+.user-chip .uc-name{font-size:13px;font-weight:600;color:var(--ink)}
+.user-chip .uc-role{font-size:11px;color:var(--text-2)}
+.user-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:190px;z-index:200;overflow:hidden;display:none}
+.user-chip:hover .user-menu,.user-chip.open .user-menu{display:block}
+.user-menu-item{display:flex;align-items:center;gap:10px;padding:11px 15px;font-size:13.5px;font-weight:500;color:var(--text);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left}
+.user-menu-item svg{width:16px;height:16px;color:var(--text-3)}
+.user-menu-item:hover{background:var(--surface-2)}
+.user-menu-item.danger{color:var(--red)}
+.user-menu-item.danger svg{color:var(--red)}
+/* Logs view */
+.log-entry{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line-2);font-size:13.5px;align-items:flex-start}
+.log-entry:last-child{border-bottom:none}
+.log-time{font-size:11.5px;color:var(--text-3);white-space:nowrap;min-width:130px;padding-top:1px}
+.log-badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.log-badge.login{background:var(--green-bg);color:var(--green)}
+.log-badge.logout{background:var(--parch-2);color:var(--text-2)}
+.log-badge.create{background:var(--blue-bg);color:var(--blue)}
+.log-badge.edit{background:var(--amber-bg);color:var(--amber)}
+.log-badge.delete{background:var(--red-bg);color:var(--red)}
+.log-badge.view{background:var(--surface-2);color:var(--text-2)}
+.log-msg{flex:1;color:var(--text)}
+.log-user-chip{font-size:11.5px;font-weight:600;color:var(--ink);background:var(--parch-2);padding:2px 8px;border-radius:6px}
+
 /* ===== Honorários por hora ===== */
 .time-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
 .time-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
@@ -398,7 +452,51 @@ tbody tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
-<div class="app">
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-2 5h4l-2-5zM19 7l-2 5h4l-2-5zM7 12a2 2 0 1 1-4 0M21 12a2 2 0 1 1-4 0M5 7l7-2 7 2M8 21h8"/></svg>
+      </div>
+      <div class="auth-header-text">
+        <h1>Lexora</h1>
+        <p>Gestão Jurídica</p>
+      </div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar conta</button>
+    </div>
+    <div class="auth-body">
+      <div id="authErr" class="auth-err"></div>
+      <!-- LOGIN -->
+      <div id="panelLogin">
+        <div class="auth-field"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="username"></div>
+        <div class="auth-field"><label>Senha</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="auth-btn" onclick="doLogin()">Entrar no sistema</button>
+      </div>
+      <!-- REGISTER -->
+      <div id="panelRegister" style="display:none">
+        <div class="auth-field"><label>Nome completo</label><input type="text" id="regName" placeholder="Dr. João Silva"></div>
+        <div class="auth-field"><label>E-mail</label><input type="email" id="regEmail" placeholder="seu@email.com" autocomplete="username"></div>
+        <div class="auth-field"><label>Senha (mín. 6 caracteres)</label><input type="password" id="regPass" placeholder="••••••••" autocomplete="new-password"></div>
+        <div class="auth-field"><label>Confirmar senha</label><input type="password" id="regPass2" placeholder="••••••••" autocomplete="new-password"></div>
+        <div class="auth-field">
+          <label>Perfil de acesso</label>
+          <div class="auth-role">
+            <label><input type="radio" name="regRole" value="admin" checked><span class="auth-role-btn">Administrador</span></label>
+            <label><input type="radio" name="regRole" value="advogado"><span class="auth-role-btn">Advogado</span></label>
+            <label><input type="radio" name="regRole" value="assistente"><span class="auth-role-btn">Assistente</span></label>
+          </div>
+        </div>
+        <button class="auth-btn" onclick="doRegister()">Criar conta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="appShell" style="display:none">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
@@ -432,10 +530,28 @@ tbody tr:last-child td{border-bottom:none}
         <input id="globalSearch" placeholder="Buscar processos, clientes...">
       </div>
       <div class="topbar-date"><b id="dateTop"></b><span id="timeTop"></span></div>
+      <div class="user-chip" id="userChip">
+        <div class="uc-av" id="userAv">?</div>
+        <div><div class="uc-name" id="userName">—</div><div class="uc-role" id="userRole">—</div></div>
+        <div class="user-menu">
+          <button class="user-menu-item" onclick="goto('logs');closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 10h8M8 14h8M8 18h5"/></svg>
+            Logs do sistema
+          </button>
+          <button class="user-menu-item" onclick="goto('usuarios');closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Gerenciar usuários
+          </button>
+          <button class="user-menu-item danger" onclick="doLogout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Sair
+          </button>
+        </div>
+      </div>
     </header>
     <div class="content" id="content"></div>
   </div>
-</div>
+</div><!-- /.app -->
 
 <div class="overlay" id="overlay"></div>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -447,8 +563,8 @@ tbody tr:last-child td{border-bottom:none}
    ============================================================ */
 
 /* ---------- IndexedDB wrapper ---------- */
-const DB_NAME='lexora_db', DB_VER=3;
-const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos'];
+const DB_NAME='lexora_db', DB_VER=4;
+const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos','usuarios','logs'];
 let db;
 
 function openDB(){
@@ -3162,12 +3278,338 @@ async function repCompleto(de,ate){
   h+=pdfFoot(cfg);openPDF(h,'Relatório Completo');
 }
 
-/* ---------- boot ---------- */
+/* ============================================================
+   AUTH — Usuários, Login, Logout, Logs
+   ============================================================ */
+let currentUser = null;
+
+/* Hash simples (SHA-256 via SubtleCrypto) */
+async function hashPass(pass) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* --- Log helpers --- */
+const LOG_LABELS = { login:'Login', logout:'Logout', create:'Criação', edit:'Edição', delete:'Exclusão', view:'Acesso' };
+async function addLog(action, msg, extra={}) {
+  await dbPut('logs', {
+    id: uid(),
+    ts: new Date().toISOString(),
+    userId: currentUser?.id || null,
+    userName: currentUser?.nome || 'Sistema',
+    action,
+    msg,
+    ...extra
+  });
+}
+
+/* --- Auth UI --- */
+function switchAuthTab(tab) {
+  document.getElementById('panelLogin').style.display = tab==='login' ? '' : 'none';
+  document.getElementById('panelRegister').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  document.getElementById('authErr').classList.remove('show');
+}
+function showAuthErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.classList.add('show');
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showAuthErr('Preencha e-mail e senha.'); return; }
+  const users = await dbAll('usuarios');
+  const hash  = await hashPass(pass);
+  const user  = users.find(u => u.email === email && u.hash === hash && u.ativo !== false);
+  if (!user) { showAuthErr('E-mail ou senha incorretos.'); return; }
+  currentUser = user;
+  await addLog('login', `Entrada no sistema`);
+  showApp();
+}
+
+async function doRegister() {
+  const nome  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const role  = document.querySelector('input[name="regRole"]:checked')?.value || 'advogado';
+  if (!nome || !email || !pass) { showAuthErr('Preencha todos os campos.'); return; }
+  if (pass.length < 6) { showAuthErr('Senha deve ter pelo menos 6 caracteres.'); return; }
+  if (pass !== pass2)  { showAuthErr('As senhas não conferem.'); return; }
+  const users = await dbAll('usuarios');
+  if (users.find(u => u.email === email)) { showAuthErr('Este e-mail já está cadastrado.'); return; }
+  const hash = await hashPass(pass);
+  const user = { id: uid(), nome, email, hash, role, ativo: true, criadoEm: new Date().toISOString() };
+  await dbPut('usuarios', user);
+  currentUser = user;
+  await addLog('create', `Conta criada`);
+  await addLog('login', `Primeira entrada no sistema`);
+  showApp();
+}
+
+async function doLogout() {
+  await addLog('logout', `Saída do sistema`);
+  currentUser = null;
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('authErr').classList.remove('show');
+  switchAuthTab('login');
+}
+
+function closeMenu() { document.getElementById('userChip').classList.remove('open'); }
+
+function showApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'flex';
+  // update user chip
+  const av = initials(currentUser.nome);
+  document.getElementById('userAv').textContent = av;
+  document.getElementById('userName').textContent = currentUser.nome;
+  const roleLabel = {admin:'Administrador', advogado:'Advogado', assistente:'Assistente'}[currentUser.role] || currentUser.role;
+  document.getElementById('userRole').textContent = roleLabel;
+  document.getElementById('userChip').onclick = function(e) {
+    if (e.target.closest('.user-menu-item')) return;
+    this.classList.toggle('open');
+  };
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#userChip')) {
+      document.getElementById('userChip')?.classList.remove('open');
+    }
+  });
+  // rebuild nav with auth-aware pages and go to dashboard
+  buildNav();
+  goto('dashboard').catch(e => {
+    console.error('Dashboard render error:', e);
+    document.getElementById('content').innerHTML = `<div style="padding:40px;font-family:sans-serif">
+      <h2 style="color:#b23a3a">Erro ao carregar o painel</h2>
+      <p style="color:#555;margin-top:8px">Detalhes: ${e.message}</p>
+      <button onclick="location.reload()" style="margin-top:16px;padding:10px 20px;background:#16243f;color:#fff;border:none;border-radius:8px;cursor:pointer">🔄 Recarregar</button>
+    </div>`;
+  });
+}
+
+/* --- Wrap dbPut/dbDel to auto-log --- */
+const _origPut = dbPut;
+const _origDel = dbDel;
+const LOG_STORES = { clientes:'Cliente', processos:'Processo', prazos:'Prazo', compromissos:'Compromisso', financeiro:'Financeiro', tarefas:'Tarefa', documentos:'Documento', contratos:'Contrato', honorarios:'Honorário' };
+async function dbPutLogged(store, obj, isNew) {
+  await _origPut(store, obj);
+  if (currentUser && LOG_STORES[store]) {
+    const label = LOG_STORES[store];
+    const name = obj.nome || obj.titulo || obj.descricao || obj.atividade || obj.id;
+    await addLog(isNew ? 'create' : 'edit', `${isNew?'Criou':'Editou'} ${label}: ${name}`, { store });
+  }
+  return obj;
+}
+async function dbDelLogged(store, id) {
+  await _origDel(store, id);
+  if (currentUser && LOG_STORES[store]) {
+    await addLog('delete', `Excluiu registro de ${LOG_STORES[store]} (id: ${id})`, { store, recordId: id });
+  }
+}
+
+/* ---- Pages: Usuários & Logs ---- */
+const ROLES_LABEL = { admin:'Administrador', advogado:'Advogado', assistente:'Assistente' };
+
+PAGES.push(
+  { id:'usuarios', label:'Usuários', icon:'clients', title:'Usuários do Sistema', sub:'Gerenciamento de contas e acessos', group:'Gestão' },
+  { id:'logs',     label:'Logs',     icon:'report',  title:'Logs de Atividade',  sub:'Histórico de ações no sistema',        group:'Gestão' }
+);
+
+RENDER.usuarios = async function() {
+  const users = await dbAll('usuarios');
+  const isAdmin = currentUser?.role === 'admin';
+  let rows = users.sort((a,b)=>a.nome.localeCompare(b.nome)).map(u => {
+    const av = initials(u.nome);
+    const status = u.ativo !== false
+      ? `<span class="badge bg-green"><span class="bdot"></span>Ativo</span>`
+      : `<span class="badge bg-red"><span class="bdot"></span>Inativo</span>`;
+    const roleB = `<span class="badge bg-gray">${esc(ROLES_LABEL[u.role]||u.role)}</span>`;
+    const isMe = u.id === currentUser?.id;
+    const actions = isAdmin ? `
+      <div class="row-actions">
+        <button class="icon-btn" title="Editar" onclick="editUser('${u.id}')">${svg(ICON.edit)}</button>
+        ${!isMe ? `<button class="icon-btn danger" title="${u.ativo!==false?'Desativar':'Reativar'}" onclick="toggleUser('${u.id}')">${svg(u.ativo!==false?ICON.x:ICON.check)}</button>` : ''}
+      </div>` : '';
+    return `<tr>
+      <td><div class="with-av"><div class="avatar">${esc(av)}</div><div><div class="cell-strong">${esc(u.nome)}${isMe?' <span style="font-size:11px;color:var(--brass-deep)">(você)</span>':''}</div><div class="cell-sub">${esc(u.email)}</div></div></div></td>
+      <td>${roleB}</td>
+      <td>${status}</td>
+      <td class="cell-sub">${fmtDate(u.criadoEm)}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+  if (!rows) rows = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-2)">Nenhum usuário cadastrado</td></tr>`;
+  $('#content').innerHTML = `<div class="view">
+    <div class="toolbar">
+      <div style="flex:1"></div>
+      ${isAdmin ? `<button class="btn btn-primary" onclick="newUser()">${svg(ICON.plus)} Novo usuário</button>` : ''}
+    </div>
+    <div class="table-wrap"><div class="tbl-scroll">
+      <table><thead><tr><th>Usuário</th><th>Perfil</th><th>Status</th><th>Criado em</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div></div>
+  </div>`;
+};
+
+RENDER.logs = async function() {
+  let logs = await dbAll('logs');
+  logs.sort((a,b) => b.ts.localeCompare(a.ts));
+  const filterUser = currentUser?.role !== 'admin' ? currentUser.id : null;
+  if (filterUser) logs = logs.filter(l => l.userId === filterUser);
+  const users = await dbAll('usuarios');
+  const userOpts = currentUser?.role === 'admin'
+    ? `<option value="">Todos os usuários</option>` + users.map(u=>`<option value="${u.id}">${esc(u.nome)}</option>`).join('')
+    : '';
+  const actionOpts = `<option value="">Todas as ações</option><option value="login">Login</option><option value="logout">Logout</option><option value="create">Criação</option><option value="edit">Edição</option><option value="delete">Exclusão</option>`;
+  const rows = logs.slice(0, 200).map(l => {
+    const cls = l.action || 'view';
+    const label = LOG_LABELS[l.action] || l.action;
+    return `<div class="log-entry">
+      <span class="log-time">${fmtDateTime(l.ts)}</span>
+      <span class="log-badge ${cls}">${esc(label)}</span>
+      <span class="log-msg">${esc(l.msg)}</span>
+      <span class="log-user-chip">${esc(l.userName||'—')}</span>
+    </div>`;
+  }).join('') || `<div style="padding:40px;text-align:center;color:var(--text-2)">Nenhum log registrado ainda.</div>`;
+
+  $('#content').innerHTML = `<div class="view">
+    <div class="toolbar">
+      ${currentUser?.role === 'admin' ? `
+      <select class="filter-sel" id="logFilterUser" onchange="filterLogs()">${userOpts}</select>
+      <select class="filter-sel" id="logFilterAction" onchange="filterLogs()">${actionOpts}</select>
+      ` : ''}
+      <div style="flex:1"></div>
+      <span style="font-size:13px;color:var(--text-2)">${logs.length} registro(s)</span>
+    </div>
+    <div class="table-wrap" style="border-radius:var(--radius);overflow:hidden" id="logsWrap">
+      ${rows}
+    </div>
+  </div>`;
+};
+
+async function filterLogs() {
+  let logs = await dbAll('logs');
+  logs.sort((a,b) => b.ts.localeCompare(a.ts));
+  const fu = document.getElementById('logFilterUser')?.value || '';
+  const fa = document.getElementById('logFilterAction')?.value || '';
+  if (fu) logs = logs.filter(l => l.userId === fu);
+  if (fa) logs = logs.filter(l => l.action === fa);
+  const rows = logs.slice(0, 200).map(l => {
+    const cls = l.action || 'view';
+    const label = LOG_LABELS[l.action] || l.action;
+    return `<div class="log-entry">
+      <span class="log-time">${fmtDateTime(l.ts)}</span>
+      <span class="log-badge ${cls}">${esc(label)}</span>
+      <span class="log-msg">${esc(l.msg)}</span>
+      <span class="log-user-chip">${esc(l.userName||'—')}</span>
+    </div>`;
+  }).join('') || `<div style="padding:40px;text-align:center;color:var(--text-2)">Nenhum log encontrado.</div>`;
+  document.getElementById('logsWrap').innerHTML = rows;
+}
+
+function newUser() {
+  openModal(`
+    <div class="modal-head"><div><h2>Novo usuário</h2><p>Criar conta de acesso</p></div><button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field col-2"><label>Nome completo <span class="req">*</span></label><input id="mu-nome" placeholder="Dr. Maria Souza"></div>
+        <div class="field"><label>E-mail <span class="req">*</span></label><input type="email" id="mu-email" placeholder="maria@escritorio.com"></div>
+        <div class="field"><label>Perfil</label>
+          <select id="mu-role"><option value="admin">Administrador</option><option value="advogado">Advogado</option><option value="assistente">Assistente</option></select>
+        </div>
+        <div class="field"><label>Senha <span class="req">*</span></label><input type="password" id="mu-pass" placeholder="Mínimo 6 caracteres"></div>
+        <div class="field"><label>Confirmar senha <span class="req">*</span></label><input type="password" id="mu-pass2"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewUser()">Criar usuário</button>
+    </div>`);
+}
+
+async function saveNewUser() {
+  const nome  = document.getElementById('mu-nome').value.trim();
+  const email = document.getElementById('mu-email').value.trim().toLowerCase();
+  const role  = document.getElementById('mu-role').value;
+  const pass  = document.getElementById('mu-pass').value;
+  const pass2 = document.getElementById('mu-pass2').value;
+  if (!nome || !email || !pass) { toast('Preencha os campos obrigatórios','warn'); return; }
+  if (pass.length < 6) { toast('Senha deve ter mínimo 6 caracteres','warn'); return; }
+  if (pass !== pass2) { toast('Senhas não conferem','warn'); return; }
+  const users = await dbAll('usuarios');
+  if (users.find(u => u.email === email)) { toast('E-mail já cadastrado','err'); return; }
+  const hash = await hashPass(pass);
+  await _origPut('usuarios', { id: uid(), nome, email, hash, role, ativo: true, criadoEm: new Date().toISOString() });
+  await addLog('create', `Criou usuário: ${nome} (${ROLES_LABEL[role]||role})`);
+  toast('Usuário criado com sucesso'); closeModal(); RENDER.usuarios();
+}
+
+async function editUser(id) {
+  const u = (await dbAll('usuarios')).find(x => x.id === id);
+  if (!u) return;
+  openModal(`
+    <div class="modal-head"><div><h2>Editar usuário</h2><p>${esc(u.email)}</p></div><button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field col-2"><label>Nome</label><input id="eu-nome" value="${esc(u.nome)}"></div>
+        <div class="field"><label>Perfil</label>
+          <select id="eu-role">
+            <option value="admin" ${u.role==='admin'?'selected':''}>Administrador</option>
+            <option value="advogado" ${u.role==='advogado'?'selected':''}>Advogado</option>
+            <option value="assistente" ${u.role==='assistente'?'selected':''}>Assistente</option>
+          </select>
+        </div>
+        <div class="field"><label>Nova senha (deixe vazio para manter)</label><input type="password" id="eu-pass" placeholder="Nova senha"></div>
+        <div class="field"><label>Confirmar nova senha</label><input type="password" id="eu-pass2"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditUser('${id}')">Salvar</button>
+    </div>`);
+}
+
+async function saveEditUser(id) {
+  const users = await dbAll('usuarios');
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  const nome = document.getElementById('eu-nome').value.trim();
+  const role = document.getElementById('eu-role').value;
+  const pass = document.getElementById('eu-pass').value;
+  const pass2 = document.getElementById('eu-pass2').value;
+  if (!nome) { toast('Nome obrigatório','warn'); return; }
+  if (pass && pass.length < 6) { toast('Senha mínimo 6 caracteres','warn'); return; }
+  if (pass && pass !== pass2) { toast('Senhas não conferem','warn'); return; }
+  u.nome = nome; u.role = role;
+  if (pass) u.hash = await hashPass(pass);
+  await _origPut('usuarios', u);
+  await addLog('edit', `Editou usuário: ${nome}`);
+  if (id === currentUser?.id) { currentUser = u; document.getElementById('userName').textContent = u.nome; document.getElementById('userAv').textContent = initials(u.nome); }
+  toast('Usuário atualizado'); closeModal(); RENDER.usuarios();
+}
+
+async function toggleUser(id) {
+  const users = await dbAll('usuarios');
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  u.ativo = u.ativo === false ? true : false;
+  await _origPut('usuarios', u);
+  await addLog('edit', `${u.ativo?'Reativou':'Desativou'} usuário: ${u.nome}`);
+  toast(u.ativo ? 'Usuário reativado' : 'Usuário desativado'); RENDER.usuarios();
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
 (async function init(){
   try {
     await openDB();
   } catch(e) {
-    // If DB upgrade fails (e.g. blocked by old tab), delete and retry
     console.warn('DB open failed, deleting and retrying:', e);
     try { indexedDB.deleteDatabase('lexora_db'); } catch(_){}
     await new Promise(r => setTimeout(r, 300));
@@ -3177,15 +3619,21 @@ async function repCompleto(de,ate){
   try { await loadBranding(); } catch(e){ console.warn('branding error:', e); }
   try { buildNav(); } catch(e){ console.error('buildNav error:', e); }
   tickClock(); setInterval(tickClock, 30000);
-  try {
-    await goto('dashboard');
-  } catch(e) {
-    console.error('Dashboard render error:', e);
-    $('#content').innerHTML = `<div style="padding:40px;font-family:sans-serif">
-      <h2 style="color:#b23a3a">Erro ao carregar o painel</h2>
-      <p style="color:#555;margin-top:8px">Detalhes: ${e.message}</p>
-      <button onclick="location.reload()" style="margin-top:16px;padding:10px 20px;background:#16243f;color:#fff;border:none;border-radius:8px;cursor:pointer">🔄 Recarregar</button>
-    </div>`;
+
+  // Bind enter key on login/register forms
+  document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('loginEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('regPass2').addEventListener('keydown', e=>{ if(e.key==='Enter') doRegister(); });
+
+  // Check if any users exist; if not show hint
+  const users = await dbAll('usuarios');
+  if (!users.length) {
+    // Show register tab by default if no users yet
+    switchAuthTab('register');
+    const hint = document.getElementById('authErr');
+    hint.style.background = 'var(--blue-bg)'; hint.style.color = 'var(--blue)';
+    hint.textContent = 'Bem-vindo! Crie sua conta de administrador para começar.';
+    hint.classList.add('show');
   }
 })();
 </script>
