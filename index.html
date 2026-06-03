@@ -1,10 +1,71 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lexora — Gestão Jurídica</title>
+<script>
+/* ============================================================
+   PROTEÇÃO DE CÓDIGO-FONTE — Lexora
+   ============================================================ */
+(function(){
+  // 1. Bloqueia clique direito
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; }, true);
+
+  // 2. Bloqueia seleção de texto em todo o documento
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); return false; }, true);
+
+  // 3. Bloqueia cópia, corte e colagem
+  document.addEventListener('copy',  function(e){ e.preventDefault(); return false; }, true);
+  document.addEventListener('cut',   function(e){ e.preventDefault(); return false; }, true);
+
+  // 4. Bloqueia atalhos de teclado perigosos
+  document.addEventListener('keydown', function(e){
+    var k = e.key ? e.key.toLowerCase() : '';
+    var ctrl = e.ctrlKey || e.metaKey;
+
+    // F12 — DevTools
+    if(e.keyCode === 123){ e.preventDefault(); return false; }
+    // Ctrl+U — Ver código-fonte
+    if(ctrl && k === 'u'){ e.preventDefault(); return false; }
+    // Ctrl+S — Salvar página
+    if(ctrl && k === 's'){ e.preventDefault(); return false; }
+    // Ctrl+Shift+I — DevTools (Elements)
+    if(ctrl && e.shiftKey && k === 'i'){ e.preventDefault(); return false; }
+    // Ctrl+Shift+J — DevTools (Console)
+    if(ctrl && e.shiftKey && k === 'j'){ e.preventDefault(); return false; }
+    // Ctrl+Shift+C — DevTools (Inspector)
+    if(ctrl && e.shiftKey && k === 'c'){ e.preventDefault(); return false; }
+    // Ctrl+Shift+K — Console (Firefox)
+    if(ctrl && e.shiftKey && k === 'k'){ e.preventDefault(); return false; }
+    // Ctrl+A — Selecionar tudo
+    if(ctrl && k === 'a'){ e.preventDefault(); return false; }
+    // Ctrl+C — Copiar
+    if(ctrl && k === 'c'){ e.preventDefault(); return false; }
+    // Ctrl+P — Imprimir (evita ver o HTML pelo print)
+    if(ctrl && k === 'p'){ e.preventDefault(); return false; }
+  }, true);
+
+  // 5. Detecção de DevTools aberto por tamanho de janela
+  (function devToolsDetect(){
+    var threshold = 160;
+    setInterval(function(){
+      if(
+        (window.outerWidth  - window.innerWidth  > threshold) ||
+        (window.outerHeight - window.innerHeight > threshold)
+      ){
+        // Redireciona ou exibe aviso se DevTools for detectado
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;font-family:sans-serif;background:#16243f;color:#f4f0e8;gap:16px;"><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'#b08332\' stroke-width=\'1.5\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z\'/></svg><h2 style=\'font-size:22px;font-weight:700;margin:0\'>Acesso bloqueado</h2><p style=\'color:#b7c1d4;text-align:center;max-width:340px;font-size:15px\'>O uso de ferramentas de desenvolvedor não é permitido neste sistema.</p><button onclick=\'window.location.reload()\' style=\'margin-top:8px;padding:10px 24px;background:#b08332;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer\'>Recarregar</button></div>';
+      }
+    }, 1000);
+  })();
+
+  // 6. CSS: desabilita seleção de texto via CSS
+  var style = document.createElement('style');
+  style.textContent = '* { -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important; } input, textarea, select { -webkit-user-select: text !important; -moz-user-select: text !important; user-select: text !important; }';
+  document.head.appendChild(style);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
