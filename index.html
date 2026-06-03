@@ -464,9 +464,9 @@ tbody tr:last-child td{border-bottom:none}
         <p>Gestão Jurídica</p>
       </div>
     </div>
-    <div class="auth-tabs">
+    <div class="auth-tabs" id="authTabs">
       <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
-      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar conta</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')" style="display:none">Criar conta</button>
     </div>
     <div class="auth-body">
       <div id="authErr" class="auth-err"></div>
@@ -3346,6 +3346,7 @@ async function doRegister() {
   currentUser = user;
   await addLog('create', `Conta criada`);
   await addLog('login', `Primeira entrada no sistema`);
+  document.getElementById('tabRegister').style.display = 'none';
   showApp();
 }
 
@@ -3628,13 +3629,15 @@ async function toggleUser(id) {
   // Check if any users exist; if not show hint
   const users = await dbAll('usuarios');
   if (!users.length) {
-    // Show register tab by default if no users yet
+    // First run: show register tab so admin can create first account
+    document.getElementById('tabRegister').style.display = '';
     switchAuthTab('register');
     const hint = document.getElementById('authErr');
     hint.style.background = 'var(--blue-bg)'; hint.style.color = 'var(--blue)';
-    hint.textContent = 'Bem-vindo! Crie sua conta de administrador para começar.';
+    hint.textContent = 'Bem-vindo! Crie a conta de administrador para começar.';
     hint.classList.add('show');
   }
+  // If users exist, only show login — register is admin-only inside the app
 })();
 </script>
 </body>
