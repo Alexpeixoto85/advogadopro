@@ -516,6 +516,152 @@ tbody tr:last-child td{border-bottom:none}
 .rep-card p{font-size:13px;color:var(--text-2);line-height:1.5}
 @media(max-width:1100px){.time-summary{grid-template-columns:repeat(2,1fr)}.dos-grid{grid-template-columns:1fr}.rep-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.rep-grid{grid-template-columns:1fr}.dos-res-grid{grid-template-columns:1fr}}
+
+/* ===== NOVOS RECURSOS ===== */
+
+/* --- Sino de Notificações --- */
+.notif-btn{position:relative;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;transition:border-color .15s}
+.notif-btn svg{width:20px;height:20px;color:var(--text-2)}
+.notif-btn:hover{border-color:var(--brass)}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:none;place-items:center;padding:0 4px;border:2px solid var(--parch)}
+.notif-badge.show{display:grid}
+.notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:360px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);z-index:300;display:none;overflow:hidden;animation:pop .22s ease}
+.notif-panel.show{display:block}
+.notif-wrap{position:relative}
+.notif-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--line-2)}
+.notif-head h4{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.notif-head button{font-size:12px;color:var(--brass-deep);font-weight:600;cursor:pointer;background:none;border:none}
+.notif-list{max-height:360px;overflow-y:auto}
+.notif-item{display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-2);transition:background .12s;cursor:default}
+.notif-item:last-child{border-bottom:none}
+.notif-item:hover{background:var(--surface-2)}
+.notif-item.unread{background:var(--amber-bg)}
+.notif-ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.notif-ico svg{width:16px;height:16px}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.notif-desc{font-size:12px;color:var(--text-2);line-height:1.4}
+.notif-time{font-size:11px;color:var(--text-3);margin-top:3px}
+.notif-empty{text-align:center;padding:28px;color:var(--text-3);font-size:13px}
+
+/* --- Calendário --- */
+.cal-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
+.cal-header h2{font-family:var(--serif);font-size:20px;color:var(--ink);text-transform:capitalize}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;transition:background .12s,border-color .12s}
+.cal-nav button:hover{background:var(--parch-2);border-color:var(--brass)}
+.cal-nav button svg{width:16px;height:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:10px 0;border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.cal-cell{min-height:90px;padding:6px;border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);transition:background .12s;cursor:pointer}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell:hover{background:var(--parch-2)}
+.cal-cell.today{background:var(--amber-bg)}
+.cal-cell.other-month .cal-day{color:var(--text-3);opacity:.5}
+.cal-day{font-size:14px;font-weight:600;color:var(--ink);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;margin-bottom:4px}
+.cal-cell.today .cal-day{background:var(--brass);color:#fff}
+.cal-event{font-size:11px;padding:2px 6px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.cal-event.prazo{background:var(--red-bg);color:var(--red)}
+.cal-event.compromisso{background:var(--blue-bg);color:var(--blue)}
+.cal-event.tarefa{background:var(--green-bg);color:var(--green)}
+.cal-event.audiencia{background:var(--amber-bg);color:var(--amber)}
+.cal-more{font-size:11px;color:var(--brass-deep);font-weight:600;padding:0 4px}
+
+/* --- Busca Global --- */
+.search-panel{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);width:540px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);z-index:300;display:none;overflow:hidden}
+.search-panel.show{display:block}
+.search-results{max-height:400px;overflow-y:auto}
+.search-section-lbl{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);font-weight:700;padding:10px 16px 4px}
+.search-hit{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:background .12s}
+.search-hit:hover{background:var(--surface-2)}
+.search-hit-ico{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.search-hit-ico svg{width:15px;height:15px}
+.search-hit-body{flex:1;min-width:0}
+.search-hit-title{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-hit-meta{font-size:12px;color:var(--text-2)}
+.search-empty{text-align:center;padding:28px;color:var(--text-3);font-size:13.5px}
+.search-topbar-wrap{position:relative}
+
+/* --- Perfil 360° do cliente --- */
+.client360-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-top:18px}
+.c360-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.c360-panel-head{padding:14px 18px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:8px}
+.c360-panel-head h4{font-family:var(--serif);font-size:15px;color:var(--ink)}
+.c360-panel-head svg{width:16px;height:16px;color:var(--text-3)}
+.c360-list{padding:0}
+.c360-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line-2);font-size:13px}
+.c360-row:last-child{border-bottom:none}
+.c360-row-left{color:var(--text-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c360-row-right{font-weight:600;color:var(--ink);flex-shrink:0;margin-left:12px}
+.c360-header{display:flex;align-items:center;gap:16px;padding:20px 22px;border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.c360-av{width:52px;height:52px;border-radius:14px;background:var(--ink);color:var(--brass-soft);display:grid;place-items:center;font-family:var(--serif);font-size:20px;font-weight:700;flex-shrink:0}
+.c360-info h3{font-family:var(--serif);font-size:19px;color:var(--ink)}
+.c360-info p{font-size:12.5px;color:var(--text-2);margin-top:2px}
+
+/* --- Cobrança WhatsApp --- */
+.cob-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.cob-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cob-card-head h4{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.cob-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-wpp{background:#25d366;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:background .15s}
+.btn-wpp:hover{background:#1da851}
+.btn-wpp svg{width:16px;height:16px}
+.btn-copy{background:var(--surface);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-copy:hover{border-color:var(--brass);color:var(--brass-deep)}
+.btn-copy svg{width:15px;height:15px}
+.cob-msg-preview{background:var(--parch-2);border:1px solid var(--line-2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin-top:12px;max-height:200px;overflow-y:auto}
+
+/* --- Gráfico Financeiro Avançado --- */
+.fin-adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.fin-chart-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.chart-title-row{font-size:11.5px;color:var(--text-2);font-weight:600;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.chart-legend{display:flex;gap:14px;font-size:11.5px}
+.chart-legend span{display:flex;align-items:center;gap:5px}
+.chart-legend .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.chart-area{flex:1;min-height:140px;display:flex;flex-direction:column}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;flex:1;padding-bottom:4px}
+.chart-bar-group{display:flex;gap:3px;align-items:flex-end;flex:1;height:100%}
+.chart-bar{border-radius:4px 4px 0 0;min-width:10px;min-height:2px;transition:opacity .2s,transform .2s;cursor:pointer;flex:1}
+.chart-bar:hover{opacity:.75;transform:scaleY(1.03);transform-origin:bottom}
+.chart-bar-rec{background:var(--green)}
+.chart-bar-desp{background:var(--red)}
+.chart-x-labels{display:flex;gap:6px;margin-top:6px}
+.chart-x-lbl{flex:1;text-align:center;font-size:10.5px;color:var(--text-3);font-weight:500}
+
+/* --- Calculadoras Jurídicas --- */
+.calc-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:22px}
+.calc-tab{flex:1;padding:13px 10px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all .15s;border:none;background:none;border-right:1px solid var(--line);text-align:center;font-family:inherit}
+.calc-tab:last-child{border-right:none}
+.calc-tab.active{background:var(--ink);color:#fff}
+.calc-tab:hover:not(.active){background:var(--surface-2);color:var(--ink)}
+.calc-panel{display:none}.calc-panel.active{display:block}
+.calc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);max-width:780px}
+.calc-result{background:var(--ink);color:#fff;border-radius:12px;padding:22px 26px;margin-top:20px}
+.calc-result h4{font-family:var(--serif);font-size:16px;color:var(--brass-soft);margin-bottom:14px}
+.calc-res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.calc-res-item{background:rgba(255,255,255,.07);border-radius:9px;padding:14px;text-align:center}
+.calc-res-val{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff}
+.calc-res-lbl{font-size:10.5px;color:#8b98b5;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.1);font-size:13.5px}
+.calc-row:last-child{border-bottom:none}
+.calc-row .ck{color:#8b98b5}.calc-row .cv{font-weight:600;color:#fff}
+.calc-btn{background:linear-gradient(150deg,var(--brass),var(--brass-deep));color:#fff;padding:12px 28px;border-radius:11px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-top:8px;transition:box-shadow .15s,transform .12s;box-shadow:0 4px 14px rgba(176,131,50,.3)}
+.calc-btn:hover{box-shadow:0 6px 20px rgba(176,131,50,.42);transform:translateY(-1px)}
+.calc-btn:active{transform:none}
+.calc-note{font-size:11.5px;color:var(--text-3);margin-top:12px;line-height:1.5;background:var(--parch-2);padding:10px 14px;border-radius:8px}
+
+/* --- Timer flutuante --- */
+.timer-float{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;border-radius:16px;padding:14px 18px;box-shadow:var(--shadow-lg);z-index:500;display:none;align-items:center;gap:14px;font-size:14px;min-width:220px}
+.timer-float.show{display:flex}
+.timer-display{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--brass-soft);min-width:72px}
+.timer-label{font-size:11.5px;color:#8b98b5;margin-top:2px}
+.timer-btns{display:flex;gap:6px;margin-left:auto}
+.timer-btns button{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:grid;place-items:center;font-size:13px;font-weight:700}
+.timer-btns button svg{width:14px;height:14px}
+.timer-pause{background:var(--amber);color:#fff}
+.timer-stop{background:var(--red);color:#fff}
+
 </style>
 </head>
 <body>
@@ -592,11 +738,24 @@ tbody tr:last-child td{border-bottom:none}
         <h1 id="pageTitle">Painel</h1>
         <p id="pageSub">Visão geral do escritório</p>
       </div>
-      <div class="topbar-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="globalSearch" placeholder="Buscar processos, clientes...">
+      <div class="search-topbar-wrap">
+        <div class="topbar-search" id="topbarSearchBox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="globalSearch" placeholder="Buscar processos, clientes..." autocomplete="off">
+        </div>
+        <div class="search-panel" id="searchPanel"><div class="search-results" id="searchResults"></div></div>
       </div>
       <div class="topbar-date"><b id="dateTop"></b><span id="timeTop"></span></div>
+      <div class="notif-wrap">
+        <button class="notif-btn" id="notifBtn" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge"></span>
+        </button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-head"><h4>Notificações</h4><button onclick="markAllRead()">Marcar todas lidas</button></div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+      </div>
       <div class="user-chip" id="userChip">
         <div class="uc-av" id="userAv">?</div>
         <div><div class="uc-name" id="userName">—</div><div class="uc-role" id="userRole">—</div></div>
@@ -622,6 +781,20 @@ tbody tr:last-child td{border-bottom:none}
 
 <div class="overlay" id="overlay"></div>
 <div class="toast-wrap" id="toastWrap"></div>
+<div class="timer-float" id="timerFloat">
+  <div>
+    <div class="timer-display" id="timerDisplay">00:00:00</div>
+    <div class="timer-label" id="timerLabel">Cronômetro ativo</div>
+  </div>
+  <div class="timer-btns">
+    <button class="timer-pause" id="timerPauseBtn" title="Pausar/Retomar" onclick="toggleTimerPause()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 4H6v16h4zM18 4h-4v16h4z"/></svg>
+    </button>
+    <button class="timer-stop" title="Parar e registrar" onclick="stopTimer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+    </button>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -728,13 +901,16 @@ const PAGES=[
   {id:'processos',label:'Processos',icon:'cases',title:'Processos',sub:'Acompanhamento processual',group:'Principal'},
   {id:'prazos',label:'Prazos',icon:'deadline',title:'Prazos',sub:'Controle de prazos e intimações',group:'Operação'},
   {id:'agenda',label:'Agenda',icon:'agenda',title:'Agenda',sub:'Audiências e compromissos',group:'Operação'},
+  {id:'calendario',label:'Calendário',icon:'agenda',title:'Calendário',sub:'Visão mensal de prazos e compromissos',group:'Operação'},
   {id:'tarefas',label:'Tarefas',icon:'tasks',title:'Tarefas',sub:'Quadro de atividades',group:'Operação'},
   {id:'financeiro',label:'Financeiro',icon:'finance',title:'Financeiro',sub:'Honorários, receitas e despesas',group:'Gestão'},
   {id:'acompanhamento',label:'Acompanhamento',icon:'repeat',title:'Acompanhamento',sub:'Contratos anuais com mensalidade',group:'Gestão'},
+  {id:'cobranca',label:'Cobranças',icon:'finance',title:'Central de Cobranças',sub:'Mensalidades em atraso e envio de cobrança',group:'Gestão'},
   {id:'documentos',label:'Documentos',icon:'docs',title:'Documentos',sub:'Modelos e anotações',group:'Gestão'},
   {id:'contratos',label:'Contratos & Peças',icon:'contract',title:'Contratos & Peças Jurídicas',sub:'Petições criminais, trabalhistas e previdenciárias — contratos, recibos e procurações',group:'Gestão'},
   {id:'honorarios',label:'Honorários/h',icon:'timer',title:'Controle por Hora',sub:'Lançamento e faturamento por hora trabalhada',group:'Gestão'},
   {id:'dosimetria',label:'Dosimetria',icon:'calc',title:'Calculadora de Dosimetria',sub:'Cálculo da pena em três fases',group:'Ferramentas'},
+  {id:'calculadoras',label:'Calculadoras',icon:'key',title:'Calculadoras Jurídicas',sub:'Juros, correção, prazo, prescrição e trabalhista',group:'Ferramentas'},
   {id:'relatorios',label:'Relatórios',icon:'report',title:'Relatórios',sub:'Exportar relatórios em PDF',group:'Ferramentas'},
   {id:'config',label:'Configurações',icon:'settings',title:'Configurações',sub:'Dados do escritório e backup',group:'Gestão'},
 ];
@@ -749,8 +925,8 @@ function userCanAccess(pageId) {
   if (!perms || perms.length === 0) {
     // default permissions by role if never configured
     const defaults = {
-      advogado: ['dashboard','clientes','processos','prazos','agenda','tarefas','financeiro','acompanhamento','documentos','contratos','honorarios','dosimetria','relatorios'],
-      assistente: ['dashboard','clientes','prazos','agenda','tarefas','documentos'],
+      advogado: ['dashboard','clientes','processos','prazos','agenda','calendario','tarefas','financeiro','acompanhamento','cobranca','documentos','contratos','honorarios','dosimetria','calculadoras','relatorios'],
+      assistente: ['dashboard','clientes','prazos','agenda','calendario','tarefas','documentos'],
     };
     return (defaults[currentUser.role] || ['dashboard']).includes(pageId);
   }
@@ -923,6 +1099,7 @@ RENDER.clientes=async function(){
         <td><div>${esc(c.telefone||'—')}</div><div class="cell-sub">${esc(c.email||'')}</div></td>
         <td><span class="badge bg-blue"><span class="bdot"></span>${np} ${np===1?'processo':'processos'}</span></td>
         <td><div class="row-actions">
+          <button class="icon-btn btn360" data-c360="${c.id}" title="Perfil 360°" style="color:var(--brass-deep)">${svg('<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3M15.5 3.5A9 9 0 0 1 21 12"/>',1.8,17)}</button>
           <button class="icon-btn" data-view="${c.id}" title="Ver">${svg(ICON.eye)}</button>
           <button class="icon-btn" data-edit="${c.id}" title="Editar">${svg(ICON.edit)}</button>
           <button class="icon-btn danger" data-del="${c.id}" title="Excluir">${svg(ICON.trash)}</button>
@@ -934,6 +1111,7 @@ RENDER.clientes=async function(){
   $$('[data-edit]').forEach(b=>b.onclick=()=>cliForm(b.dataset.edit));
   $$('[data-del]').forEach(b=>b.onclick=()=>confirmDel('clientes',b.dataset.del,'cliente',RENDER.clientes));
   $$('[data-view]').forEach(b=>b.onclick=()=>cliDetail(b.dataset.view));
+  $$('[data-c360]').forEach(b=>b.onclick=e=>{e.stopPropagation();viewCliente360(b.dataset.c360);});
   $('.view').classList.add('active');
 };
 async function cliForm(id){
@@ -1364,6 +1542,7 @@ RENDER.financeiro=async function(){
           <button class="icon-btn danger" data-del="${f.id}">${svg(ICON.trash)}</button>
         </div></td></tr>`).join('')}</tbody></table></div></div>`
     :emptyState('finance','Nenhum lançamento financeiro','Registre honorários, custas e despesas para acompanhar a saúde financeira do escritório.','Novo lançamento','addFin')}
+    <div id="finChartInline" class="fin-chart-wrap" style="margin-top:20px"></div>
   </div>`;
   $('#fTipo').onchange=e=>{finF=e.target.value;RENDER.financeiro();};
   $('#fMes').onchange=e=>{finMonth=e.target.value;RENDER.financeiro();};
@@ -1376,6 +1555,7 @@ RENDER.financeiro=async function(){
   $$('[data-edit]').forEach(b=>b.onclick=()=>finForm(b.dataset.edit));
   $$('[data-del]').forEach(b=>b.onclick=()=>confirmDel('financeiro',b.dataset.del,'lançamento',RENDER.financeiro));
   $('.view').classList.add('active');
+  renderFinancialChart('finChartInline');
 };
 async function finForm(id){
   const f=id?await dbGet('financeiro',id):{tipo:'receita',status:'pago',data:todayISO()};
@@ -2630,10 +2810,10 @@ function importData(e){
 
 /* ----- shared helpers for views ----- */
 function emptyState(icon,title,desc,btnLabel,btnId){
+  const btn=btnLabel?`<button class="btn btn-primary" id="${btnId}">${svg(ICON.plus)} ${btnLabel}</button>`:'';
   return `<div class="table-wrap"><div class="empty">
     <div class="empty-ico">${svg(ICON[icon])}</div>
-    <h3>${title}</h3><p>${desc}</p>
-    <button class="btn btn-primary" id="${btnId}">${svg(ICON.plus)} ${btnLabel}</button>
+    <h3>${title}</h3><p>${desc}</p>${btn}
   </div></div>`;
 }
 function confirmDel(store,id,label,after){
@@ -3505,6 +3685,478 @@ async function printDosimetria(data){
 }
 
 /* ============================================================
+   CALCULADORAS JURÍDICAS
+   1. Juros e Correção Monetária
+   2. Contagem de Prazos (CPC/CPP)
+   3. Prescrição Cível e Criminal
+   4. Verbas Rescisórias Trabalhistas
+   5. Honorários Advocatícios (art. 85 CPC)
+   ============================================================ */
+let _calcTab = 'juros';
+RENDER.calculadoras = async function(){
+  $('#content').innerHTML=`<div class="view">
+  <div class="calc-tabs">
+    <button class="calc-tab${_calcTab==='juros'?' active':''}" onclick="switchCalc('juros')">💰 Juros & Correção</button>
+    <button class="calc-tab${_calcTab==='prazo'?' active':''}" onclick="switchCalc('prazo')">📅 Prazos</button>
+    <button class="calc-tab${_calcTab==='prescricao'?' active':''}" onclick="switchCalc('prescricao')">⏳ Prescrição</button>
+    <button class="calc-tab${_calcTab==='trabalhista'?' active':''}" onclick="switchCalc('trabalhista')">👷 Verbas Rescisórias</button>
+    <button class="calc-tab${_calcTab==='honorarios'?' active':''}" onclick="switchCalc('honorarios')">⚖️ Honorários CPC</button>
+  </div>
+
+  <!-- 1. JUROS E CORREÇÃO MONETÁRIA -->
+  <div class="calc-panel${_calcTab==='juros'?' active':''}" id="cpJuros">
+    <div class="calc-card">
+      <h3 class="section-title" style="margin-bottom:18px">Juros & Correção Monetária</h3>
+      <div class="form-grid">
+        <div class="field"><label>Valor principal (R$) <span class="req">*</span></label><input id="jPrincipal" type="number" step="0.01" placeholder="Ex: 10000,00" min="0"></div>
+        <div class="field"><label>Taxa de juros (% ao mês)</label><input id="jTaxa" type="number" step="0.001" value="1" placeholder="Padrão: 1% a.m."></div>
+        <div class="field"><label>Data inicial <span class="req">*</span></label><input id="jDataIni" type="date" value="${todayISO()}"></div>
+        <div class="field"><label>Data final</label><input id="jDataFim" type="date" value="${todayISO()}"></div>
+        <div class="field"><label>Tipo de juros</label>
+          <select id="jTipo">
+            <option value="simples">Simples</option>
+            <option value="compostos">Compostos</option>
+          </select>
+        </div>
+        <div class="field"><label>Correção monetária (INPC/IPCA est.)</label>
+          <select id="jCorrecao">
+            <option value="0">Sem correção</option>
+            <option value="0.4">INPC estimado (~0,40%/mês)</option>
+            <option value="0.38">IPCA estimado (~0,38%/mês)</option>
+            <option value="0.5">CDI estimado (~0,50%/mês)</option>
+            <option value="custom">Personalizada</option>
+          </select>
+        </div>
+        <div class="field col-2" id="jCorrecaoCustomWrap" style="display:none">
+          <label>Taxa de correção personalizada (% ao mês)</label>
+          <input id="jCorrecaoCustom" type="number" step="0.001" value="0.4" placeholder="Ex: 0.4">
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcJuros()">Calcular</button>
+      <div id="jResultado"></div>
+      <div class="calc-note">⚠ As taxas de correção são estimativas. Para cálculos processuais definitivos, consulte as tabelas oficiais do TJSP/STJ ou utilize o sistema do tribunal competente.</div>
+    </div>
+  </div>
+
+  <!-- 2. CONTAGEM DE PRAZOS -->
+  <div class="calc-panel${_calcTab==='prazo'?' active':''}" id="cpPrazo">
+    <div class="calc-card">
+      <h3 class="section-title" style="margin-bottom:18px">Contagem de Prazos Processuais</h3>
+      <div class="form-grid">
+        <div class="field"><label>Data da intimação / publicação <span class="req">*</span></label><input id="pDataInt" type="date" value="${todayISO()}"></div>
+        <div class="field"><label>Prazo em dias <span class="req">*</span></label><input id="pDias" type="number" min="1" value="15" placeholder="Ex: 15"></div>
+        <div class="field"><label>Regime de contagem</label>
+          <select id="pRegime">
+            <option value="uteis_cpc">Dias úteis — CPC/2015 (art. 219)</option>
+            <option value="corridos">Dias corridos — CPP / CLT</option>
+            <option value="uteis_clp">Dias úteis — CLT (art. 775)</option>
+          </select>
+        </div>
+        <div class="field"><label>Início da contagem</label>
+          <select id="pInicio">
+            <option value="excl">Exclui o dia da intimação (regra geral)</option>
+            <option value="incl">Inclui o dia da intimação</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcPrazo()">Calcular prazo</button>
+      <div id="pResultado"></div>
+      <div class="calc-note">A contagem automática considera apenas os finais de semana como dias não úteis. Feriados nacionais e locais devem ser verificados manualmente. O prazo recai no próximo dia útil se cair em feriado ou fim de semana.</div>
+    </div>
+  </div>
+
+  <!-- 3. PRESCRIÇÃO -->
+  <div class="calc-panel${_calcTab==='prescricao'?' active':''}" id="cpPrescricao">
+    <div class="calc-card">
+      <h3 class="section-title" style="margin-bottom:18px">Calculadora de Prescrição</h3>
+      <div class="form-grid">
+        <div class="field"><label>Tipo</label>
+          <select id="prTipo" onchange="updatePrescricaoTipo()">
+            <option value="civel">Cível — Código Civil</option>
+            <option value="criminal">Criminal — Código Penal</option>
+            <option value="trabalhista">Trabalhista — TST</option>
+          </select>
+        </div>
+        <div class="field"><label>Data do fato / lesão <span class="req">*</span></label><input id="prDataFato" type="date" value="${todayISO()}"></div>
+        <div class="field col-2" id="prCivelWrap">
+          <label>Pretensão / ação cível</label>
+          <select id="prCivelTipo">
+            <optgroup label="Prazo Geral">
+              <option value="10" selected>Pretensão geral — 10 anos (art. 205 CC)</option>
+            </optgroup>
+            <optgroup label="Prazos Especiais (art. 206 CC)">
+              <option value="1">Cobrança de aluguéis, pensões, prestações — 3 anos</option>
+              <option value="3">Indenização civil, contrato, enriquecimento — 3 anos</option>
+              <option value="4">Tutela/curatela — 4 anos</option>
+              <option value="5">Dívidas em geral / líquidas — 5 anos</option>
+              <option value="0.5">Hospedagem, pousada — 6 meses</option>
+              <option value="1">Profissionais liberais / autônomos — 1 ano</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field col-2" id="prCriminalWrap" style="display:none">
+          <label>Pena máxima em abstrato (anos)</label>
+          <input id="prPenaMax" type="number" min="1" max="40" value="4" step="1" placeholder="Ex: 4">
+          <span class="hint" style="margin-top:4px">A prescrição criminal é calculada pelo art. 109 CP com base na pena máxima</span>
+        </div>
+        <div class="field col-2" id="prTrabalhistaWrap" style="display:none">
+          <label>Situação do vínculo</label>
+          <select id="prTrabSit">
+            <option value="vigente">Contrato vigente — prescreve em 5 anos (limite 2 anos após rescisão)</option>
+            <option value="encerrado">Contrato encerrado — 2 anos após rescisão (CLT art. 7º, XXIX CF)</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcPrescricao()">Calcular prescrição</button>
+      <div id="prResultado"></div>
+    </div>
+  </div>
+
+  <!-- 4. VERBAS RESCISÓRIAS -->
+  <div class="calc-panel${_calcTab==='trabalhista'?' active':''}" id="cpTrabalhista">
+    <div class="calc-card">
+      <h3 class="section-title" style="margin-bottom:18px">Verbas Rescisórias Trabalhistas</h3>
+      <div class="form-grid">
+        <div class="field"><label>Salário bruto (R$) <span class="req">*</span></label><input id="tSalario" type="number" step="0.01" min="0" placeholder="Ex: 3500,00"></div>
+        <div class="field"><label>Tipo de rescisão <span class="req">*</span></label>
+          <select id="tTipoRescisao">
+            <option value="sd">Sem justa causa pelo empregador</option>
+            <option value="pj">Por justa causa pelo empregador</option>
+            <option value="pp">Por pedido do empregado</option>
+            <option value="rr">Rescisão indireta (justa causa do empregador)</option>
+            <option value="ca">Comum acordo (art. 484-A CLT)</option>
+          </select>
+        </div>
+        <div class="field"><label>Data de admissão <span class="req">*</span></label><input id="tAdmissao" type="date"></div>
+        <div class="field"><label>Data de demissão <span class="req">*</span></label><input id="tDemissao" type="date" value="${todayISO()}"></div>
+        <div class="field"><label>Dias de aviso-prévio trabalhados</label><input id="tAviso" type="number" min="0" max="90" value="30"></div>
+        <div class="field"><label>Saldo de banco de horas (h)</label><input id="tBH" type="number" min="0" value="0" step="0.5"></div>
+        <div class="field"><label>Férias vencidas (períodos)</label><input id="tFeriasVenc" type="number" min="0" value="0" step="1"></div>
+        <div class="field"><label>Meses do período aquisitivo atual</label><input id="tFeriasProp" type="number" min="0" max="11" value="0"></div>
+      </div>
+      <button class="calc-btn" onclick="calcRescisao()">Calcular verbas</button>
+      <div id="tResultado"></div>
+      <div class="calc-note">⚠ Cálculo estimativo. Variáveis como adicionais (hora extra, insalubridade, noturno), DSR, vale-transporte, plano de saúde e outros benefícios podem alterar os valores. Consulte sempre um especialista em direito do trabalho.</div>
+    </div>
+  </div>
+
+  <!-- 5. HONORÁRIOS CPC -->
+  <div class="calc-panel${_calcTab==='honorarios'?' active':''}" id="cpHonorarios">
+    <div class="calc-card">
+      <h3 class="section-title" style="margin-bottom:18px">Honorários Advocatícios — art. 85 CPC</h3>
+      <div class="form-grid">
+        <div class="field"><label>Valor da condenação / proveito econômico (R$) <span class="req">*</span></label><input id="hValor" type="number" step="0.01" min="0" placeholder="Ex: 50000,00"></div>
+        <div class="field"><label>Percentual aplicado (%)</label><input id="hPct" type="number" step="0.5" min="10" max="20" value="15" placeholder="10% a 20% (art. 85 §2º)"></div>
+        <div class="field"><label>Tipo de causa</label>
+          <select id="hTipoCausa">
+            <option value="condenacao">Condenação em dinheiro</option>
+            <option value="improcedente">Ação improcedente (réu)</option>
+            <option value="inestimavel">Proveito inestimável / irrisório</option>
+            <option value="fazenda">Fazenda Pública</option>
+          </select>
+        </div>
+        <div class="field col-2" id="hFazendaWrap" style="display:none"><label>Faixa do valor — Fazenda Pública (art. 85 §3º)</label>
+          <select id="hFaixaFazenda">
+            <option value="8">Até 200 salários mínimos → 10%–20%</option>
+            <option value="8">200–2.000 SM → 8%–10%</option>
+            <option value="5">2.000–20.000 SM → 5%–8%</option>
+            <option value="3">20.000–100.000 SM → 3%–5%</option>
+            <option value="1">Acima de 100.000 SM → 1%–3%</option>
+          </select>
+        </div>
+        <div class="field"><label>Grau de dificuldade / trabalho realizado</label>
+          <select id="hDificuldade">
+            <option value="minimo">Mínimo (10%)</option>
+            <option value="medio" selected>Médio (15%)</option>
+            <option value="maximo">Máximo (20%)</option>
+            <option value="custom">Personalizado</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcHonorariosArt85()">Calcular honorários</button>
+      <div id="hResultado"></div>
+      <div class="calc-note">Os percentuais previstos no art. 85 §2º CPC variam entre 10% e 20% sobre a condenação. Para a Fazenda Pública (§3º) as faixas são regressivas. O valor mínimo é de 10 salários mínimos quando o proveito econômico for inestimável ou irrisório (§8º).</div>
+    </div>
+  </div>
+  </div>`;
+  $('.view').classList.add('active');
+  // Bind correction type toggle
+  $('#jCorrecao').onchange=e=>{$('#jCorrecaoCustomWrap').style.display=e.target.value==='custom'?'':'none';};
+  $('#hTipoCausa').onchange=e=>{$('#hFazendaWrap').style.display=e.target.value==='fazenda'?'':'none';};
+  $('#hDificuldade').onchange=e=>{
+    const map={minimo:10,medio:15,maximo:20};
+    if(map[e.target.value]!==undefined)$('#hPct').value=map[e.target.value];
+  };
+};
+
+function switchCalc(tab){
+  _calcTab=tab;
+  $$('.calc-tab').forEach((b,i)=>{
+    const ids=['juros','prazo','prescricao','trabalhista','honorarios'];
+    b.classList.toggle('active',ids[i]===tab);
+  });
+  $$('.calc-panel').forEach(p=>{
+    const id=p.id.replace('cp','').toLowerCase();
+    p.classList.toggle('active',id===tab);
+  });
+}
+
+function updatePrescricaoTipo(){
+  const v=$('#prTipo').value;
+  $('#prCivelWrap').style.display=v==='civel'?'':'none';
+  $('#prCriminalWrap').style.display=v==='criminal'?'':'none';
+  $('#prTrabalhistaWrap').style.display=v==='trabalhista'?'':'none';
+}
+
+/* ---- Calculadora 1: Juros ---- */
+function calcJuros(){
+  const principal=parseFloat($('#jPrincipal').value)||0;
+  if(principal<=0){toast('Informe o valor principal','warn');return;}
+  const taxa=parseFloat($('#jTaxa').value)||1;
+  const tipo=$('#jTipo').value;
+  const correcaoSel=$('#jCorrecao').value;
+  const correcaoTaxa=correcaoSel==='custom'?parseFloat($('#jCorrecaoCustom').value||0):parseFloat(correcaoSel)||0;
+  const ini=new Date($('#jDataIni').value+'T00:00:00');
+  const fim=new Date($('#jDataFim').value+'T00:00:00');
+  if(isNaN(ini)||isNaN(fim)){toast('Informe as datas','warn');return;}
+  const dias=Math.max(0,Math.round((fim-ini)/86400000));
+  const meses=dias/30;
+  let montante,jurosVal;
+  if(tipo==='simples'){
+    jurosVal=principal*(taxa/100)*meses;
+    montante=principal+jurosVal;
+  } else {
+    montante=principal*Math.pow(1+taxa/100,meses);
+    jurosVal=montante-principal;
+  }
+  // Correção
+  let corrigido=principal;
+  if(correcaoTaxa>0){
+    corrigido=principal*Math.pow(1+correcaoTaxa/100,meses);
+  }
+  const totalComCorrecao=tipo==='simples'?(corrigido+corrigido*(taxa/100)*meses):(corrigido*Math.pow(1+taxa/100,meses));
+  const totalJuros=totalComCorrecao-principal;
+
+  $('#jResultado').innerHTML=`<div class="calc-result">
+    <h4>Resultado do Cálculo</h4>
+    <div class="calc-res-grid">
+      <div class="calc-res-item"><div class="calc-res-val">${moneyBR(principal)}</div><div class="calc-res-lbl">Principal</div></div>
+      <div class="calc-res-item"><div class="calc-res-val" style="color:#f2c25b">${moneyBR(jurosVal)}</div><div class="calc-res-lbl">Juros (${tipo})</div></div>
+      <div class="calc-res-item"><div class="calc-res-val" style="color:#7ddb9a">${moneyBR(montante)}</div><div class="calc-res-lbl">Total s/ correção</div></div>
+    </div>
+    ${correcaoTaxa>0?`<div class="calc-row"><span class="ck">Com correção monetária (${correcaoTaxa}%/mês)</span><span class="cv">${moneyBR(totalComCorrecao)}</span></div>
+    <div class="calc-row"><span class="ck">Acréscimo total (juros+correção)</span><span class="cv" style="color:#f2c25b">${moneyBR(totalJuros)}</span></div>`:''}
+    <div class="calc-row"><span class="ck">Período</span><span class="cv">${dias} dias (${meses.toFixed(1)} meses)</span></div>
+    <div class="calc-row"><span class="ck">Taxa</span><span class="cv">${taxa}% a.m. — juros ${tipo}</span></div>
+  </div>`;
+}
+
+/* ---- Calculadora 2: Prazos ---- */
+function calcPrazo(){
+  const dataInt=new Date($('#pDataInt').value+'T00:00:00');
+  const dias=parseInt($('#pDias').value)||0;
+  const regime=$('#pRegime').value;
+  const inicio=$('#pInicio').value;
+  if(isNaN(dataInt)){toast('Informe a data da intimação','warn');return;}
+  if(dias<=0){toast('Informe o número de dias','warn');return;}
+
+  let atual=new Date(dataInt);
+  // Excluir dia da intimação (regra geral CPC art. 224)
+  if(inicio==='excl') atual.setDate(atual.getDate()+1);
+
+  // Pular para próximo dia útil se não útil
+  const isUtil=d=>{const dw=d.getDay();return dw!==0&&dw!==6;};
+  if(regime!=='corridos'){while(!isUtil(atual))atual.setDate(atual.getDate()+1);}
+
+  let contados=0;
+  while(contados<dias){
+    if(regime==='corridos'){contados++;if(contados<dias)atual.setDate(atual.getDate()+1);}
+    else{atual.setDate(atual.getDate()+1);if(isUtil(atual))contados++;}
+  }
+  // Se o vencimento cair em dia não útil, prorrogar
+  if(regime!=='corridos'){while(!isUtil(atual))atual.setDate(atual.getDate()+1);}
+
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const faltam=Math.round((atual-hoje)/86400000);
+  const vencido=faltam<0;
+  const cor=vencido?'var(--red)':faltam<=3?'var(--amber)':'#7ddb9a';
+  const dows=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+
+  $('#pResultado').innerHTML=`<div class="calc-result">
+    <h4>Resultado do Prazo</h4>
+    <div class="calc-res-grid" style="grid-template-columns:1fr 1fr">
+      <div class="calc-res-item"><div class="calc-res-val" style="color:${cor}">${atual.toLocaleDateString('pt-BR')}</div><div class="calc-res-lbl">Vencimento do prazo</div></div>
+      <div class="calc-res-item"><div class="calc-res-val" style="color:${cor}">${vencido?'Vencido há '+Math.abs(faltam)+'d':faltam===0?'Vence HOJE':'Faltam '+faltam+' dias'}</div><div class="calc-res-lbl">Situação</div></div>
+    </div>
+    <div class="calc-row"><span class="ck">Dia da semana</span><span class="cv">${dows[atual.getDay()]}</span></div>
+    <div class="calc-row"><span class="ck">Regime</span><span class="cv">${{'uteis_cpc':'Dias úteis — CPC','corridos':'Dias corridos','uteis_clp':'Dias úteis — CLT'}[regime]}</span></div>
+    <div class="calc-row"><span class="ck">Data da intimação</span><span class="cv">${dataInt.toLocaleDateString('pt-BR')}</span></div>
+    <div class="calc-row"><span class="ck">Prazo</span><span class="cv">${dias} dias</span></div>
+  </div>`;
+}
+
+/* ---- Calculadora 3: Prescrição ---- */
+function calcPrescricao(){
+  const tipo=$('#prTipo').value;
+  const dataFato=new Date($('#prDataFato').value+'T00:00:00');
+  if(isNaN(dataFato)){toast('Informe a data do fato','warn');return;}
+  let anos=0,descricao='';
+
+  if(tipo==='civel'){
+    anos=parseFloat($('#prCivelTipo').value)||10;
+    descricao=$('#prCivelTipo').options[$('#prCivelTipo').selectedIndex].text;
+  } else if(tipo==='criminal'){
+    const pena=parseFloat($('#prPenaMax').value)||4;
+    // Art. 109 CP
+    if(pena>12)anos=20;
+    else if(pena>8)anos=16;
+    else if(pena>4)anos=12;
+    else if(pena>2)anos=8;
+    else if(pena>=1)anos=4;
+    else anos=3;
+    descricao=`Pena máx. ${pena}a → prescrição em ${anos} anos (art. 109 CP)`;
+  } else {
+    const sit=$('#prTrabSit').value;
+    if(sit==='vigente'){anos=5;descricao='Prescrição quinquenal (contrato vigente — CLT art. 7º XXIX CF)';}
+    else{anos=2;descricao='Prescrição bienal (após rescisão — CLT art. 7º XXIX CF)';}
+  }
+
+  const venc=new Date(dataFato);
+  venc.setFullYear(venc.getFullYear()+Math.floor(anos));
+  if(anos%1!==0){const mExtra=Math.round((anos%1)*12);venc.setMonth(venc.getMonth()+mExtra);}
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const faltam=Math.round((venc-hoje)/86400000);
+  const prescrita=faltam<0;
+  const cor=prescrita?'var(--red)':faltam<=365?'var(--amber)':'#7ddb9a';
+
+  $('#prResultado').innerHTML=`<div class="calc-result">
+    <h4>Resultado — Prescrição</h4>
+    <div class="calc-res-grid" style="grid-template-columns:1fr 1fr">
+      <div class="calc-res-item"><div class="calc-res-val" style="color:${cor}">${venc.toLocaleDateString('pt-BR')}</div><div class="calc-res-lbl">Prescreve em</div></div>
+      <div class="calc-res-item"><div class="calc-res-val" style="color:${cor}">${prescrita?'⚠ PRESCRITA':'Faltam ~'+Math.ceil(faltam/365)+' ano(s)'}</div><div class="calc-res-lbl">Situação</div></div>
+    </div>
+    <div class="calc-row"><span class="ck">Fundamento</span><span class="cv" style="font-size:12px">${esc(descricao)}</span></div>
+    <div class="calc-row"><span class="ck">Data do fato</span><span class="cv">${dataFato.toLocaleDateString('pt-BR')}</span></div>
+    <div class="calc-row"><span class="ck">Prazo prescricional</span><span class="cv">${anos} anos</span></div>
+  </div>`;
+}
+
+/* ---- Calculadora 4: Verbas Rescisórias ---- */
+function calcRescisao(){
+  const salario=parseFloat($('#tSalario').value)||0;
+  if(salario<=0){toast('Informe o salário','warn');return;}
+  const tipo=$('#tTipoRescisao').value;
+  const admStr=$('#tAdmissao').value;
+  const demStr=$('#tDemissao').value;
+  if(!admStr||!demStr){toast('Informe as datas','warn');return;}
+  const adm=new Date(admStr+'T00:00:00');
+  const dem=new Date(demStr+'T00:00:00');
+  if(dem<=adm){toast('Data de demissão deve ser posterior à admissão','warn');return;}
+
+  // Tempo de serviço em meses
+  const totalDias=Math.round((dem-adm)/86400000);
+  const mesesCompletos=Math.floor(totalDias/30);
+  const anos=Math.floor(mesesCompletos/12);
+  const mesesRest=mesesCompletos%12;
+  const anosStr=`${anos}a ${mesesRest}m`;
+
+  const avisoTrab=parseInt($('#tAviso').value)||30;
+  const bh=parseFloat($('#tBH').value)||0;
+  const feriasVenc=parseInt($('#tFeriasVenc').value)||0;
+  const feriasPropMeses=parseInt($('#tFeriasProp').value)||0;
+
+  // Valores diário e por hora
+  const salDia=salario/30;
+  const salH=salario/220;
+
+  // ---- Calcular por tipo ----
+  const temSaldo=true;
+  const diasSaldo=dem.getDate(); // dias trabalhados no mês da demissão
+  const saldoSalario=salDia*diasSaldo;
+
+  const temAviso=tipo!=='pj'&&tipo!=='pp';
+  const avisoIndeniz=tipo==='sd'||tipo==='rr'||tipo==='ca'?salario*(avisoTrab/30):0;
+  const avisoProporcional=Math.min(3,Math.floor(anos/1))*3; // cada ano completo acima de 1 = +3 dias, máx 60
+
+  // 13º proporcional
+  const decTercProp=(mesesCompletos%12)/12*salario;
+  const decTercAnterior=tipo!=='pj'?0:0; // simplificado
+
+  // Férias proporcionais + 1/3
+  const feriasPropVal=(feriasPropMeses/12)*salario*(4/3);
+  const feriasVencVal=feriasVenc*salario*(4/3);
+
+  // FGTS
+  const baseFGTS=salario*mesesCompletos;
+  const fgtsDepositado=baseFGTS*0.08;
+  const fgtsMulSd=tipo==='sd'||tipo==='rr'?fgtsDepositado*0.4:tipo==='ca'?fgtsDepositado*0.2:0;
+
+  // Banco de horas
+  const bhVal=bh*salH;
+
+  // Totais
+  const itens=[
+    {label:'Saldo de salário ('+diasSaldo+' dias)',val:saldoSalario,inc:true},
+    {label:'Aviso-prévio indenizado',val:avisoIndeniz,inc:tipo==='sd'||tipo==='rr'||tipo==='ca'},
+    {label:'13º proporcional ('+mesesRest+'/'+(mesesRest===0?12:12)+')',val:decTercProp,inc:tipo!=='pj'},
+    {label:'Férias proporcionais + 1/3 ('+feriasPropMeses+' meses)',val:feriasPropVal,inc:feriasPropMeses>0&&tipo!=='pj'},
+    {label:'Férias vencidas + 1/3 ('+feriasVenc+' período)',val:feriasVencVal,inc:feriasVenc>0},
+    {label:'Banco de horas ('+bh+'h)',val:bhVal,inc:bh>0},
+    {label:'Multa FGTS 40% (sem justa causa)',val:fgtsMulSd,inc:fgtsMulSd>0},
+  ];
+  const total=itens.filter(i=>i.inc).reduce((s,i)=>s+i.val,0);
+
+  $('#tResultado').innerHTML=`<div class="calc-result">
+    <h4>Verbas Rescisórias — ${{'sd':'Sem justa causa','pj':'Justa causa (empregador)','pp':'Pedido de demissão','rr':'Rescisão indireta','ca':'Comum acordo'}[tipo]}</h4>
+    <div class="calc-res-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="calc-res-item"><div class="calc-res-val">${moneyBR(salario)}</div><div class="calc-res-lbl">Salário</div></div>
+      <div class="calc-res-item"><div class="calc-res-val">${anosStr}</div><div class="calc-res-lbl">Tempo de serviço</div></div>
+      <div class="calc-res-item"><div class="calc-res-val" style="color:#7ddb9a">${moneyBR(total)}</div><div class="calc-res-lbl">Total estimado</div></div>
+    </div>
+    ${itens.filter(i=>i.inc).map(i=>`<div class="calc-row"><span class="ck">${esc(i.label)}</span><span class="cv">${moneyBR(i.val)}</span></div>`).join('')}
+    <div class="calc-row" style="border-top:1px solid rgba(255,255,255,.2);padding-top:12px;margin-top:4px"><span class="ck" style="font-weight:700;font-size:14px;color:#fff">TOTAL ESTIMADO</span><span class="cv" style="font-size:18px;color:#7ddb9a">${moneyBR(total)}</span></div>
+    <div style="margin-top:8px;font-size:11.5px;color:#8b98b5">FGTS depositado estimado: ${moneyBR(fgtsDepositado)} · INSS/IR não descontados nesta estimativa</div>
+  </div>`;
+}
+
+/* ---- Calculadora 5: Honorários art. 85 CPC ---- */
+function calcHonorariosArt85(){
+  const valor=parseFloat($('#hValor').value)||0;
+  if(valor<=0){toast('Informe o valor da condenação','warn');return;}
+  let pct=parseFloat($('#hPct').value)||15;
+  const tipoCausa=$('#hTipoCausa').value;
+  const SM=1518; // Salário mínimo 2025
+
+  let base=valor,nota='',fundamento='art. 85 §2º CPC';
+  if(tipoCausa==='inestimavel'){
+    base=10*SM;
+    nota=`Valor inestimável/irrisório → mínimo 10 salários mínimos (art. 85 §8º CPC) = ${moneyBR(base)}`;
+    pct=100; fundamento='art. 85 §8º CPC';
+  } else if(tipoCausa==='fazenda'){
+    const faixa=parseFloat($('#hFaixaFazenda').value)||8;
+    pct=faixa;
+    fundamento='art. 85 §3º CPC — Fazenda Pública';
+  }
+  const honorarios=(base*pct/100);
+  const min=valor*0.1,max=valor*0.2;
+
+  $('#hResultado').innerHTML=`<div class="calc-result">
+    <h4>Honorários Advocatícios</h4>
+    <div class="calc-res-grid" style="grid-template-columns:1fr 1fr">
+      <div class="calc-res-item"><div class="calc-res-val" style="color:#7ddb9a">${moneyBR(honorarios)}</div><div class="calc-res-lbl">Honorários (${pct}%)</div></div>
+      <div class="calc-res-item"><div class="calc-res-val">${moneyBR(valor)}</div><div class="calc-res-lbl">Base de cálculo</div></div>
+    </div>
+    ${tipoCausa!=='inestimavel'&&tipoCausa!=='fazenda'?`<div class="calc-row"><span class="ck">Faixa legal (10%–20%)</span><span class="cv">${moneyBR(min)} a ${moneyBR(max)}</span></div>`:''}
+    <div class="calc-row"><span class="ck">Fundamento</span><span class="cv">${fundamento}</span></div>
+    <div class="calc-row"><span class="ck">Percentual aplicado</span><span class="cv">${pct}%</span></div>
+    ${nota?`<div style="margin-top:10px;font-size:12.5px;color:#f2c25b">${esc(nota)}</div>`:''}
+    <div style="margin-top:14px;padding:12px;background:rgba(255,255,255,.06);border-radius:8px;font-size:12.5px;color:#cdd6e6">
+      <b>Faixas comuns:</b> 10% (mínimo) · 15% (médio) · 20% (máximo) — o juiz considera o grau de zelo, lugar de prestação, natureza e importância da causa, trabalho realizado e tempo exigido (art. 85 §2º CPC).
+    </div>
+  </div>`;
+}
+
+/* ============================================================
    RELATÓRIOS EM PDF
    ============================================================ */
 RENDER.relatorios=async function(){
@@ -3804,6 +4456,7 @@ async function doLogin() {
   currentUser = user;
   await addLog('login', `Entrada no sistema`);
   showApp();
+  document.dispatchEvent(new CustomEvent('lexora:login'));
 }
 
 async function doRegister() {
@@ -4360,7 +5013,528 @@ async function toggleUser(id) {
     hint.classList.add('show');
   }
   // If users exist, only show login — register is admin-only inside the app
+  // Init new modules after login (called from afterLogin)
 })();
+
+/* ============================================================
+   MÓDULO 1 — CENTRAL DE NOTIFICAÇÕES
+   ============================================================ */
+let _notifRead = new Set(JSON.parse(localStorage.getItem('lexora_notif_read')||'[]'));
+function saveNotifRead(){ localStorage.setItem('lexora_notif_read', JSON.stringify([..._notifRead])); }
+
+async function buildNotifications(){
+  const [prazos,tar,acomp] = await Promise.all(['prazos','tarefas','contratosAcomp'].map(dbAll));
+  const today = todayISO();
+  const items = [];
+
+  // Prazos vencidos ou urgentes
+  prazos.filter(p=>p.status!=='cumprido').forEach(p=>{
+    const d = daysUntil(p.dataPrazo);
+    if(d===null) return;
+    if(d<0) items.push({id:'prazo_'+p.id, type:'danger', icon:ICON.deadline, title:'Prazo vencido', desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+    else if(d<=3) items.push({id:'prazo_'+p.id, type:'warn', icon:ICON.deadline, title:`Prazo em ${d===0?'hoje':d+' dia(s)'}`, desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+    else if(d<=7) items.push({id:'prazo_'+p.id, type:'info', icon:ICON.deadline, title:`Prazo em ${d} dias`, desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+  });
+
+  // Tarefas vencidas
+  tar.filter(t=>t.status!=='concluido'&&t.dataVencimento&&t.dataVencimento<today).forEach(t=>{
+    items.push({id:'tar_'+t.id, type:'warn', icon:ICON.tasks, title:'Tarefa em atraso', desc: esc(t.titulo||''), time: fmtDate(t.dataVencimento)});
+  });
+
+  // Mensalidades em atraso
+  acomp.forEach(c=>{
+    (c.parcelas||[]).forEach(p=>{
+      const d=daysUntil(p.vencimento);
+      if(p.status!=='pago'&&d!==null&&d<0){
+        items.push({id:'mens_'+c.id+'_'+p.competencia, type:'danger', icon:ICON.finance, title:'Mensalidade em atraso', desc: esc((c.numero||'Contrato')+' — '+moneyBR(p.valor)), time: fmtDate(p.vencimento)});
+      }
+    });
+  });
+
+  const unread = items.filter(i=>!_notifRead.has(i.id));
+  const badge = $('#notifBadge');
+  if(badge){
+    if(unread.length>0){ badge.textContent=unread.length>9?'9+':unread.length; badge.classList.add('show'); }
+    else badge.classList.remove('show');
+  }
+
+  const list = $('#notifList');
+  if(!list) return;
+  if(!items.length){ list.innerHTML=`<div class="notif-empty">Nenhuma notificação pendente</div>`; return; }
+
+  const colorMap={danger:'var(--red-bg)',warn:'var(--amber-bg)',info:'var(--blue-bg)'};
+  const textMap={danger:'var(--red)',warn:'var(--amber)',info:'var(--blue)'};
+  list.innerHTML = items.map(i=>`
+    <div class="notif-item${_notifRead.has(i.id)?'':' unread'}" onclick="readNotif('${i.id}')">
+      <div class="notif-ico" style="background:${colorMap[i.type]||'var(--parch-2)'};color:${textMap[i.type]||'var(--text-2)'}">
+        ${svg(i.icon,1.8,16)}
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">${i.title}</div>
+        <div class="notif-desc">${i.desc}</div>
+        <div class="notif-time">${i.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function readNotif(id){ _notifRead.add(id); saveNotifRead(); buildNotifications(); }
+function markAllRead(){
+  const list = $('#notifList');
+  if(list) list.querySelectorAll('.notif-item').forEach(el=>{
+    const m = el.getAttribute('onclick').match(/'([^']+)'/);
+    if(m) _notifRead.add(m[1]);
+  });
+  saveNotifRead(); buildNotifications();
+}
+
+// Toggle notification panel
+document.addEventListener('click', e=>{
+  const btn = $('#notifBtn'); const panel = $('#notifPanel');
+  if(!btn||!panel) return;
+  if(btn.contains(e.target)){
+    panel.classList.toggle('show');
+    if(panel.classList.contains('show')) buildNotifications();
+  } else if(!panel.contains(e.target)){
+    panel.classList.remove('show');
+  }
+});
+
+
+/* ============================================================
+   MÓDULO 2 — BUSCA GLOBAL UNIFICADA
+   ============================================================ */
+let _searchTimer;
+async function runGlobalSearch(q){
+  const panel = $('#searchPanel'); const results = $('#searchResults');
+  if(!q||q.length<2){ panel.classList.remove('show'); return; }
+  panel.classList.add('show');
+  results.innerHTML = `<div class="search-empty">Buscando...</div>`;
+
+  const [cli, proc, prazos, fin] = await Promise.all(['clientes','processos','prazos','financeiro'].map(dbAll));
+  const ql = q.toLowerCase();
+  const hits = [];
+
+  cli.filter(c=>(c.nome||'').toLowerCase().includes(ql)||(c.cpfCnpj||'').includes(ql)).slice(0,4).forEach(c=>{
+    hits.push({section:'Clientes',icon:ICON.clients,color:'var(--blue-bg)',textColor:'var(--blue)',title:c.nome,meta:(c.cpfCnpj?maskCpfCnpj(c.cpfCnpj)+' · ':'')+(c.tipo||''),nav:'clientes'});
+  });
+  proc.filter(p=>(p.numero||'').toLowerCase().includes(ql)||(p.tipoAcao||'').toLowerCase().includes(ql)).slice(0,4).forEach(p=>{
+    hits.push({section:'Processos',icon:ICON.cases,color:'var(--amber-bg)',textColor:'var(--amber)',title:p.tipoAcao||p.numero||'Processo',meta:(p.numero?p.numero+' · ':'')+( p.area||''),nav:'processos'});
+  });
+  prazos.filter(p=>(p.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(p=>{
+    hits.push({section:'Prazos',icon:ICON.deadline,color:'var(--red-bg)',textColor:'var(--red)',title:p.descricao,meta:'Vence: '+fmtDate(p.dataPrazo),nav:'prazos'});
+  });
+  fin.filter(f=>(f.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(f=>{
+    hits.push({section:'Financeiro',icon:ICON.finance,color:'var(--green-bg)',textColor:'var(--green)',title:f.descricao,meta:moneyBR(f.valor)+' · '+fmtDate(f.data),nav:'financeiro'});
+  });
+
+  if(!hits.length){ results.innerHTML=`<div class="search-empty">Nenhum resultado para "<b>${esc(q)}</b>"</div>`; return; }
+
+  let html=''; let lastSec='';
+  hits.forEach(h=>{
+    if(h.section!==lastSec){ html+=`<div class="search-section-lbl">${h.section}</div>`; lastSec=h.section; }
+    html+=`<div class="search-hit" onclick="goto('${h.nav}');closeSearch()">
+      <div class="search-hit-ico" style="background:${h.color};color:${h.textColor}">${svg(h.icon,1.8,15)}</div>
+      <div class="search-hit-body">
+        <div class="search-hit-title">${esc(h.title)}</div>
+        <div class="search-hit-meta">${esc(h.meta)}</div>
+      </div>
+    </div>`;
+  });
+  results.innerHTML=html;
+}
+
+function closeSearch(){ $('#searchPanel')?.classList.remove('show'); if($('#globalSearch'))$('#globalSearch').value=''; }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp = $('#globalSearch');
+  if(inp){
+    inp.addEventListener('input',e=>{ clearTimeout(_searchTimer); _searchTimer=setTimeout(()=>runGlobalSearch(e.target.value.trim()),250); });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSearch(); });
+  }
+  document.addEventListener('click',e=>{
+    const wrap=$('.search-topbar-wrap');
+    if(wrap&&!wrap.contains(e.target)) closeSearch();
+  });
+});
+
+
+/* ============================================================
+   MÓDULO 3 — CALENDÁRIO MENSAL VISUAL
+   ============================================================ */
+let _calYear = new Date().getFullYear(), _calMonth = new Date().getMonth();
+
+RENDER.calendario = async function(){
+  const [prazos, comp, tar] = await Promise.all(['prazos','compromissos','tarefas'].map(dbAll));
+  renderCalView(prazos, comp, tar);
+};
+
+function renderCalView(prazos, comp, tar){
+  const yr=_calYear, mo=_calMonth;
+  const monthName = new Date(yr,mo,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const firstDay = new Date(yr,mo,1).getDay();
+  const daysInMonth = new Date(yr,mo+1,0).getDate();
+  const daysInPrev = new Date(yr,mo,0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Build event map
+  const evMap={};
+  const addEv=(dateStr,ev)=>{ if(!evMap[dateStr]) evMap[dateStr]=[]; evMap[dateStr].push(ev); };
+
+  prazos.filter(p=>p.status!=='cumprido').forEach(p=>{ if(p.dataPrazo) addEv(p.dataPrazo, {type:'prazo',label:p.descricao?.slice(0,22)||'Prazo'}); });
+  comp.forEach(c=>{ if(c.data) addEv(c.data,{type:c.tipo==='audiencia'?'audiencia':'compromisso',label:c.titulo?.slice(0,22)||'Compromisso'}); });
+  tar.filter(t=>t.status!=='concluido').forEach(t=>{ if(t.dataVencimento) addEv(t.dataVencimento,{type:'tarefa',label:t.titulo?.slice(0,22)||'Tarefa'}); });
+
+  // Build grid cells
+  let cells='';
+  const totalCells = Math.ceil((firstDay + daysInMonth)/7)*7;
+  for(let i=0;i<totalCells;i++){
+    let day, dateStr, isCurrentMonth=true;
+    if(i<firstDay){ day=daysInPrev-firstDay+i+1; dateStr=`${yr}-${String(mo===0?12:mo).padStart(2,'0')}-${String(day).padStart(2,'0')}`; isCurrentMonth=false; }
+    else if(i>=firstDay+daysInMonth){ day=i-firstDay-daysInMonth+1; dateStr=`${yr}-${String(mo+2>12?1:mo+2).padStart(2,'0')}-${String(day).padStart(2,'0')}`; isCurrentMonth=false; }
+    else{ day=i-firstDay+1; dateStr=`${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`; }
+    const cellDate=new Date(dateStr+'T00:00:00');
+    const isToday=cellDate.getTime()===today.getTime();
+    const events=evMap[dateStr]||[];
+    const maxShow=3;
+    const evHtml=events.slice(0,maxShow).map(e=>`<div class="cal-event ${e.type}" title="${esc(e.label)}">${esc(e.label)}</div>`).join('');
+    const more=events.length>maxShow?`<div class="cal-more">+${events.length-maxShow}</div>`:'';
+    cells+=`<div class="cal-cell${isToday?' today':''}${!isCurrentMonth?' other-month':''}">
+      <div class="cal-day">${day}</div>${evHtml}${more}
+    </div>`;
+  }
+
+  const dows=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  $('#content').innerHTML=`<div class="view">
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <h2>${monthName}</h2>
+        <div class="cal-nav">
+          <button onclick="calNav(-1)">${svg('<path d="m15 18-6-6 6-6"/>',2,16)}</button>
+          <button onclick="calToday()">Hoje</button>
+          <button onclick="calNav(1)">${svg('<path d="m9 18 6-6-6-6"/>',2,16)}</button>
+        </div>
+      </div>
+      <div class="cal-grid">
+        ${dows.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+        ${cells}
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--text-2)">
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:3px;margin-right:4px"></span>Prazo</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--blue);border-radius:3px;margin-right:4px"></span>Compromisso</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--amber);border-radius:3px;margin-right:4px"></span>Audiência</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--green);border-radius:3px;margin-right:4px"></span>Tarefa</span>
+    </div>
+  </div>`;
+  $('.view').classList.add('active');
+}
+
+async function calNav(d){ _calMonth+=d; if(_calMonth>11){_calMonth=0;_calYear++;} if(_calMonth<0){_calMonth=11;_calYear--;} await RENDER.calendario(); }
+async function calToday(){ _calYear=new Date().getFullYear(); _calMonth=new Date().getMonth(); await RENDER.calendario(); }
+
+
+/* ============================================================
+   MÓDULO 4 — CENTRAL DE COBRANÇAS (WhatsApp/E-mail)
+   ============================================================ */
+RENDER.cobranca = async function(){
+  const [acomp,cli,cfg] = await Promise.all(['contratosAcomp','clientes','config'].map(s=>s==='config'?dbGet('config','escritorio'):dbAll(s)));
+  const escritorio = cfg||{};
+  const inadimplentes = [];
+  acomp.forEach(c=>{
+    (c.parcelas||[]).forEach(p=>{
+      const d=daysUntil(p.vencimento);
+      if(p.status!=='pago'&&d!==null&&d<0){
+        inadimplentes.push({contrato:c, parcela:p, cliente:cli.find(x=>x.id===c.clienteId)});
+      }
+    });
+  });
+  inadimplentes.sort((a,b)=>(a.parcela.vencimento||'').localeCompare(b.parcela.vencimento||''));
+
+  $('#content').innerHTML=`<div class="view">
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:22px">
+      ${kpi('b4','deadline',inadimplentes.length,'Parcelas em atraso',null)}
+      ${kpi('b3','finance',moneyBR(inadimplentes.reduce((s,i)=>s+Number(i.parcela.valor||0),0)),'Total em aberto',null)}
+      ${kpi('b2','clients',[...new Set(inadimplentes.map(i=>i.contrato.clienteId))].length,'Clientes inadimplentes',null)}
+    </div>
+    ${inadimplentes.length===0?`<div class="table-wrap"><div class="empty">
+      <div class="empty-ico">${svg(ICON.finance)}</div>
+      <h3>Nenhuma cobrança pendente</h3>
+      <p>Todas as mensalidades estão em dia. Para criar novos contratos de acompanhamento, acesse o módulo correspondente.</p>
+      <button class="btn btn-primary" onclick="goto('acompanhamento')">${svg(ICON.repeat)} Ir para Acompanhamento</button>
+    </div></div>`:`
+    <h3 style="font-family:var(--serif);font-size:18px;color:var(--ink);margin-bottom:16px">Mensalidades em atraso</h3>
+    ${inadimplentes.map(({contrato:c,parcela:p,cliente})=>{
+      const dias=Math.abs(daysUntil(p.vencimento)||0);
+      const nomeCli=cliente?.nome||'Cliente';
+      const telCli=cliente?.telefone||'';
+      const msg=gerarMsgCobranca(nomeCli,c,p,escritorio,dias);
+      const telNum=(telCli||'').replace(/\D/g,'');
+      const wppUrl=`https://wa.me/55${telNum}?text=${encodeURIComponent(msg)}`;
+      return `<div class="cob-card">
+        <div class="cob-card-head">
+          <div>
+            <h4>${esc(nomeCli)}</h4>
+            <div style="font-size:12px;color:var(--text-2)">${esc(c.numero||'Contrato')} · Comp. ${esc(p.competencia||'')} · Venc. ${fmtDate(p.vencimento)}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--red)">${moneyBR(p.valor)}</div>
+            <div style="font-size:12px;color:var(--red)">${dias} dia${dias!==1?'s':''} em atraso</div>
+          </div>
+        </div>
+        <div class="cob-actions">
+          ${telNum?`<button class="btn-wpp" onclick="window.open('${wppUrl}','_blank')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.258 2 2 6.258 2 11.5c0 1.965.578 3.79 1.569 5.317L2.046 22l5.299-1.495A9.447 9.447 0 0 0 11.5 21c5.243 0 9.5-4.257 9.5-9.5S16.743 2 11.5 2z"/></svg>
+            WhatsApp${telNum?'':' (sem tel.)'}
+          </button>`:''}
+          <button class="btn-copy" onclick="copyMsg(this,'${escAttr(msg)}')">
+            ${svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',1.8,15)} Copiar mensagem
+          </button>
+        </div>
+        <details>
+          <summary style="font-size:12.5px;color:var(--brass-deep);cursor:pointer;padding:8px 0">Prévia da mensagem</summary>
+          <div class="cob-msg-preview">${esc(msg)}</div>
+        </details>
+      </div>`;
+    }).join('')}`}
+  </div>`;
+  $$('.view').forEach(v=>v.classList.add('active'));
+};
+
+function escAttr(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
+
+function gerarMsgCobranca(nome,contrato,parcela,escritorio,dias){
+  const esc2=s=>String(s||'').replace(/"/g,'');
+  return `Olá, *${esc2(nome)}*! 👋
+
+Passamos para lembrar que identificamos uma pendência financeira em seu contrato conosco.
+
+📋 *Contrato:* ${esc2(contrato.numero||'Acompanhamento processual')}
+📅 *Competência:* ${esc2(parcela.competencia||'')}
+💵 *Valor em aberto:* R$ ${Number(parcela.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}
+⏰ *Vencimento:* ${new Date((parcela.vencimento||'')+'T00:00:00').toLocaleDateString('pt-BR')} (${dias} dia${dias!==1?'s':''} em atraso)
+
+Para regularizar, entre em contato conosco para combinarmos a melhor forma de pagamento.
+
+Atenciosamente,
+*${esc2(escritorio.nome||'Escritório de Advocacia')}*
+${escritorio.telefone?'📞 '+esc2(escritorio.telefone):''}`;
+}
+
+function copyMsg(btn, msgEscaped){
+  const msg = msgEscaped.replace(/\\n/g,'\n').replace(/\\'/g,"'");
+  navigator.clipboard.writeText(msg).then(()=>{ btn.textContent='✓ Copiado!'; setTimeout(()=>{ btn.innerHTML=`${svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',1.8,15)} Copiar mensagem`; }, 2000); });
+}
+
+
+/* ============================================================
+   MÓDULO 5 — PERFIL 360° DO CLIENTE (override viewCliente)
+   ============================================================ */
+async function viewCliente360(id){
+  const [cli,proc,prazos,fin,tar,hon,acomp] = await Promise.all(
+    ['clientes','processos','prazos','financeiro','tarefas','honorarios','contratosAcomp'].map(dbAll)
+  );
+  const c=cli.find(x=>x.id===id);
+  if(!c){ toast('Cliente não encontrado','err'); return; }
+  const cProc=proc.filter(p=>p.clienteId===id);
+  const cPraz=prazos.filter(p=>cProc.find(pr=>pr.id===p.processoId)&&p.status!=='cumprido');
+  const cFin=fin.filter(f=>f.clienteId===id);
+  const cTar=tar.filter(t=>t.clienteId===id&&t.status!=='concluido');
+  const cHon=hon.filter(h=>h.clienteId===id);
+  const cAcomp=acomp.filter(a=>a.clienteId===id);
+  const totalRec=cFin.filter(f=>f.tipo==='receita'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
+  const totalPend=cFin.filter(f=>f.tipo==='receita'&&f.status!=='pago').reduce((s,f)=>s+Number(f.valor||0),0);
+  const totalH=cHon.reduce((s,h)=>s+Number(h.horas||0),0);
+
+  openModal(`
+    <div class="modal-head">
+      <div><h2>Perfil do cliente</h2><p>Visão 360° — todos os vínculos</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div class="c360-header">
+        <div class="c360-av">${initials(c.nome)}</div>
+        <div class="c360-info">
+          <h3>${esc(c.nome)}</h3>
+          <p>${c.cpfCnpj?maskCpfCnpj(c.cpfCnpj)+' · ':''}${c.tipo||''}${c.email?' · '+esc(c.email):''}</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--line-2)">
+        ${[['Processos',cProc.length,'var(--blue-bg)','var(--blue)'],['Prazos ativos',cPraz.length,'var(--red-bg)','var(--red)'],['Honorários rec.',moneyBR(totalRec),'var(--green-bg)','var(--green)'],['A receber',moneyBR(totalPend),'var(--amber-bg)','var(--amber)']].map(([l,v,bg,co])=>`
+          <div style="padding:14px 16px;text-align:center;border-right:1px solid var(--line-2)">
+            <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:${co}">${v}</div>
+            <div style="font-size:11px;color:var(--text-2);margin-top:3px">${l}</div>
+          </div>`).join('')}
+      </div>
+      <div class="client360-grid" style="padding:16px;gap:14px">
+        <div>
+          <div class="c360-panel">
+            <div class="c360-panel-head">${svg(ICON.cases,1.8,16)}<h4>Processos (${cProc.length})</h4></div>
+            <div class="c360-list">
+              ${cProc.length?cProc.slice(0,6).map(p=>`<div class="c360-row"><span class="c360-row-left">${esc(p.tipoAcao||p.numero||'—')}</span><span class="c360-row-right">${pillStatus(p.status)}</span></div>`).join(''):'<div class="c360-row" style="color:var(--text-3)">Nenhum processo</div>'}
+            </div>
+          </div>
+          <div class="c360-panel" style="margin-top:12px">
+            <div class="c360-panel-head">${svg(ICON.finance,1.8,16)}<h4>Financeiro</h4></div>
+            <div class="c360-list">
+              ${cFin.slice(0,5).map(f=>`<div class="c360-row"><span class="c360-row-left">${esc(f.descricao)}</span><span class="c360-row-right" style="color:${f.tipo==='receita'?'var(--green)':'var(--red)'}">${f.tipo==='receita'?'+':'-'}${moneyBR(f.valor)}</span></div>`).join('')||'<div class="c360-row" style="color:var(--text-3)">Sem lançamentos</div>'}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="c360-panel">
+            <div class="c360-panel-head">${svg(ICON.deadline,1.8,16)}<h4>Prazos ativos (${cPraz.length})</h4></div>
+            <div class="c360-list">
+              ${cPraz.length?cPraz.slice(0,5).map(p=>`<div class="c360-row"><span class="c360-row-left">${esc(p.descricao)}</span><span class="c360-row-right" style="font-size:12px">${fmtDate(p.dataPrazo)}</span></div>`).join(''):'<div class="c360-row" style="color:var(--text-3)">Sem prazos</div>'}
+            </div>
+          </div>
+          <div class="c360-panel" style="margin-top:12px">
+            <div class="c360-panel-head">${svg(ICON.timer,1.8,16)}<h4>Horas: ${totalH.toFixed(1)}h</h4></div>
+            <div class="c360-list">
+              ${cHon.slice(0,4).map(h=>`<div class="c360-row"><span class="c360-row-left">${esc(h.atividade||'Atividade')}</span><span class="c360-row-right">${Number(h.horas||0).toFixed(1)}h</span></div>`).join('')||'<div class="c360-row" style="color:var(--text-3)">Sem horas lançadas</div>'}
+            </div>
+          </div>
+          ${cAcomp.length?`<div class="c360-panel" style="margin-top:12px">
+            <div class="c360-panel-head">${svg(ICON.repeat,1.8,16)}<h4>Acompanhamento</h4></div>
+            <div class="c360-list">
+              ${cAcomp.map(a=>`<div class="c360-row"><span class="c360-row-left">${esc(a.numero||'Contrato')} — ${moneyBR(a.valorMensal)}/mês</span><span class="c360-row-right">${a.status==='ativo'?'<span class="badge bg-green"><span class="bdot"></span>Ativo</span>':'<span class="badge bg-gray"><span class="bdot"></span>'+esc(a.status)+'</span>'}</span></div>`).join('')}
+            </div>
+          </div>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
+      <button class="btn btn-primary" onclick="closeModal();goto('clientes')">Ir para clientes</button>
+    </div>`,true);
+}
+
+/* Helper for status pill */
+function pillStatus(s){
+  const m={'Em andamento':'bg-blue','Aguardando audiência':'bg-amber','Sentenciado':'bg-green','Encerrado':'bg-gray','Arquivado':'bg-gray'};
+  return `<span class="badge ${m[s]||'bg-gray'}" style="font-size:11px"><span class="bdot"></span>${esc(s||'—')}</span>`;
+}
+
+
+/* ============================================================
+   MÓDULO 6 — TIMER FLUTUANTE DE HORAS
+   ============================================================ */
+let _timerStart=null, _timerElapsed=0, _timerRunning=false, _timerInterval=null;
+let _timerClienteId=null, _timerProcessoId=null;
+
+function startTimer(clienteId, processoId, label){
+  _timerClienteId=clienteId; _timerProcessoId=processoId;
+  _timerStart=Date.now(); _timerElapsed=0; _timerRunning=true;
+  const lbl=$('#timerLabel'); if(lbl) lbl.textContent=label||'Cronômetro ativo';
+  const tf=$('#timerFloat'); if(tf) tf.classList.add('show');
+  _timerInterval=setInterval(updateTimerDisplay,1000);
+  toast('Cronômetro iniciado');
+}
+
+function updateTimerDisplay(){
+  if(!_timerRunning) return;
+  const elapsed=_timerElapsed+Date.now()-(_timerStart||Date.now());
+  const s=Math.floor(elapsed/1000);
+  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  const d=$('#timerDisplay');
+  if(d) d.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function toggleTimerPause(){
+  const btn=$('#timerPauseBtn');
+  if(_timerRunning){
+    _timerElapsed+=Date.now()-(_timerStart||Date.now()); _timerRunning=false;
+    clearInterval(_timerInterval);
+    if(btn) btn.innerHTML=svg('<polygon points="5 3 19 12 5 21 5 3"/>',2.5,14);
+    toast('Cronômetro pausado','warn');
+  } else {
+    _timerStart=Date.now(); _timerRunning=true;
+    _timerInterval=setInterval(updateTimerDisplay,1000);
+    if(btn) btn.innerHTML=svg('<path d="M10 4H6v16h4zM18 4h-4v16h4z"/>',2.5,14);
+    toast('Cronômetro retomado');
+  }
+}
+
+async function stopTimer(){
+  clearInterval(_timerInterval);
+  const total=_timerElapsed+(_timerRunning?Date.now()-(_timerStart||Date.now()):0);
+  const horas=+(total/3600000).toFixed(2);
+  _timerRunning=false;
+  const tf=$('#timerFloat'); if(tf) tf.classList.remove('show');
+  if(horas<0.01){ toast('Tempo muito curto para registrar','warn'); return; }
+  const cfg=(await dbGet('config','escritorio'))||{};
+  const valorHora=Number(cfg.valorHora)||350;
+  await dbPut('honorarios',{
+    id:uid(), data:todayISO(), atividade:'Registro via cronômetro',
+    tipo:'Geral', clienteId:_timerClienteId||null, processoId:_timerProcessoId||null,
+    horas, valorHora, status:'pendente', criadoEm:new Date().toISOString()
+  });
+  await addLog('create',`Lançou ${horas}h via cronômetro`);
+  toast(`${horas}h registradas com sucesso`);
+  if(current==='honorarios') RENDER.honorarios();
+  _timerClienteId=null; _timerProcessoId=null; _timerElapsed=0; _timerStart=null;
+}
+
+
+/* ============================================================
+   MÓDULO 7 — GRÁFICO FINANCEIRO MENSAL
+   ============================================================ */
+async function renderFinancialChart(containerId){
+  const fin = await dbAll('financeiro');
+  const now = new Date();
+  const meses = [];
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    meses.push({
+      key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
+      label:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','').replace(/^\w/,c=>c.toUpperCase())
+    });
+  }
+  const data=meses.map(m=>{
+    const rec=fin.filter(f=>f.tipo==='receita'&&f.status==='pago'&&(f.data||'').startsWith(m.key)).reduce((s,f)=>s+Number(f.valor||0),0);
+    const desp=fin.filter(f=>f.tipo==='despesa'&&f.status==='pago'&&(f.data||'').startsWith(m.key)).reduce((s,f)=>s+Number(f.valor||0),0);
+    return {label:m.label,rec,desp};
+  });
+  const maxVal=Math.max(...data.map(d=>Math.max(d.rec,d.desp)),1);
+  const BAR_H=120; // px height of the bar area
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML=`
+    <div class="chart-title-row">
+      <span>Receita <span style="color:var(--text-3)">×</span> Despesa — últimos 6 meses</span>
+      <div class="chart-legend">
+        <span><span class="dot" style="background:var(--green)"></span>Receita</span>
+        <span><span class="dot" style="background:var(--red)"></span>Despesa</span>
+      </div>
+    </div>
+    <div class="chart-area">
+      <div class="chart-bars" style="height:${BAR_H}px;min-height:${BAR_H}px;flex:none">
+        ${data.map(d=>{
+          const rh=Math.max(Math.round(d.rec/maxVal*BAR_H),d.rec>0?3:0);
+          const dh=Math.max(Math.round(d.desp/maxVal*BAR_H),d.desp>0?3:0);
+          return `<div class="chart-bar-group" style="height:${BAR_H}px;align-items:flex-end">
+            <div class="chart-bar chart-bar-rec" style="height:${rh}px" title="Receita ${d.label}: ${moneyBR(d.rec)}"></div>
+            <div class="chart-bar chart-bar-desp" style="height:${dh}px" title="Despesa ${d.label}: ${moneyBR(d.desp)}"></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="chart-x-labels">
+        ${data.map(d=>`<div class="chart-x-lbl">${d.label}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+
+/* ============================================================
+   PATCH — notificações no dashboard
+   ============================================================ */
+const _origRenderDash = RENDER.dashboard;
+RENDER.dashboard = async function(){
+  await _origRenderDash();
+  buildNotifications();
+};
+
+document.addEventListener('lexora:login', ()=>{ buildNotifications(); });
+
 </script>
 </body>
 </html>
