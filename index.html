@@ -46,19 +46,12 @@
     if(ctrl && k === 'p'){ e.preventDefault(); return false; }
   }, true);
 
-  // 5. Detecção de DevTools aberto por tamanho de janela
-  (function devToolsDetect(){
-    var threshold = 160;
-    setInterval(function(){
-      if(
-        (window.outerWidth  - window.innerWidth  > threshold) ||
-        (window.outerHeight - window.innerHeight > threshold)
-      ){
-        // Redireciona ou exibe aviso se DevTools for detectado
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;font-family:sans-serif;background:#16243f;color:#f4f0e8;gap:16px;"><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'#b08332\' stroke-width=\'1.5\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z\'/></svg><h2 style=\'font-size:22px;font-weight:700;margin:0\'>Acesso bloqueado</h2><p style=\'color:#b7c1d4;text-align:center;max-width:340px;font-size:15px\'>O uso de ferramentas de desenvolvedor não é permitido neste sistema.</p><button onclick=\'window.location.reload()\' style=\'margin-top:8px;padding:10px 24px;background:#b08332;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer\'>Recarregar</button></div>';
-      }
-    }, 1000);
-  })();
+  // 5. (Removido) Detecção de DevTools por tamanho de janela.
+  //    A heurística disparava falsos positivos (zoom, painel acoplado, modo
+  //    responsivo) e substituía todo o body, removendo os elementos da página.
+  //    Como o relógio e outras rotinas continuavam rodando e tentavam acessar
+  //    esses elementos já inexistentes, gerava o erro recorrente:
+  //    "Cannot set properties of null (setting 'textContent')".
 
   // 6. CSS: desabilita seleção de texto via CSS
   var style = document.createElement('style');
@@ -190,6 +183,9 @@ body.has-bg .content{background:transparent}
 .kpi-ico.b4{background:var(--red-bg);color:var(--red)}
 .kpi-val{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink);margin-top:14px;line-height:1;position:relative;z-index:1}
 .kpi-lbl{font-size:12.5px;color:var(--text-2);margin-top:6px;position:relative;z-index:1}
+.kpi.clickable{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.kpi.clickable:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(22,36,63,.14);border-color:var(--brass)}
+.kpi.clickable:active{transform:translateY(-1px)}
 
 .dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
@@ -326,6 +322,10 @@ tbody tr:last-child td{border-bottom:none}
 .fin-card.in .val{color:var(--green)}.fin-card.in .ico{background:var(--green-bg);color:var(--green)}
 .fin-card.out .val{color:var(--red)}.fin-card.out .ico{background:var(--red-bg);color:var(--red)}
 .fin-card.bal .val{color:var(--ink)}.fin-card.bal .ico{background:var(--blue-bg);color:var(--blue)}
+.fin-card.clickable{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.fin-card.clickable:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(22,36,63,.14);border-color:var(--brass)}
+.fin-card.clickable:active{transform:translateY(-1px)}
+.fin-card.clickable.active-filter{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass-soft) inset}
 
 /* kanban */
 .kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
@@ -802,10 +802,10 @@ RENDER.dashboard=async function(){
 
   $('#content').innerHTML=`<div class="view">
     <div class="kpi-grid">
-      ${kpi('b1','clients',cli.length,'Clientes cadastrados')}
-      ${kpi('b2','cases',procAtivos,'Processos ativos')}
-      ${kpi('b3','finance',moneyBR(saldo),'Saldo (recebido − pago)')}
-      ${kpi('b4','deadline',prazosUrg,'Prazos nos próximos 7 dias')}
+      ${kpi('b1','clients',cli.length,'Clientes cadastrados','clientes')}
+      ${kpi('b2','cases',procAtivos,'Processos ativos','processos')}
+      ${kpi('b3','finance',moneyBR(saldo),'Saldo (recebido − pago)','financeiro')}
+      ${kpi('b4','deadline',prazosUrg,'Prazos nos próximos 7 dias','prazos')}
     </div>
     <div class="dash-grid">
       <div class="panel">
@@ -846,9 +846,12 @@ RENDER.dashboard=async function(){
       </div>
     </div>
   </div>`;
-  $$('[data-nav]').forEach(e=>e.onclick=()=>goto(e.dataset.nav));
+  $$('[data-nav]').forEach(e=>{
+    e.onclick=()=>goto(e.dataset.nav);
+    if(e.getAttribute('role')==='button')e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();goto(e.dataset.nav);}};
+  });
 };
-function kpi(b,ic,val,lbl){return `<div class="kpi"><div class="kpi-ico ${b}">${svg(ICON[ic])}</div><div class="kpi-val">${val}</div><div class="kpi-lbl">${lbl}</div></div>`;}
+function kpi(b,ic,val,lbl,nav){return `<div class="kpi${nav?' clickable':''}"${nav?` data-nav="${nav}" role="button" tabindex="0"`:''}><div class="kpi-ico ${b}">${svg(ICON[ic])}</div><div class="kpi-val">${val}</div><div class="kpi-lbl">${lbl}</div></div>`;}
 function renderTL(x){
   const d=new Date((x.data||'')+'T00:00:00');
   const day=isNaN(d)?'?':d.getDate();
@@ -1320,9 +1323,9 @@ RENDER.financeiro=async function(){
   const desp=fin.filter(f=>f.tipo==='despesa'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
   $('#content').innerHTML=`<div class="view">
     <div class="fin-grid">
-      <div class="fin-card in"><div class="lbl"><span class="ico">${svg('<path d="M12 19V5M5 12l7-7 7 7"/>')}</span> Receitas recebidas</div><div class="val">${moneyBR(rec)}</div></div>
-      <div class="fin-card out"><div class="lbl"><span class="ico">${svg('<path d="M12 5v14M5 12l7 7 7-7"/>')}</span> Despesas pagas</div><div class="val">${moneyBR(desp)}</div></div>
-      <div class="fin-card bal"><div class="lbl"><span class="ico">${svg(ICON.finance)}</span> Saldo</div><div class="val">${moneyBR(rec-desp)}</div></div>
+      <div class="fin-card in clickable${finF==='receita'?' active-filter':''}" data-finfilter="receita" role="button" tabindex="0"><div class="lbl"><span class="ico">${svg('<path d="M12 19V5M5 12l7-7 7 7"/>')}</span> Receitas recebidas</div><div class="val">${moneyBR(rec)}</div></div>
+      <div class="fin-card out clickable${finF==='despesa'?' active-filter':''}" data-finfilter="despesa" role="button" tabindex="0"><div class="lbl"><span class="ico">${svg('<path d="M12 5v14M5 12l7 7 7-7"/>')}</span> Despesas pagas</div><div class="val">${moneyBR(desp)}</div></div>
+      <div class="fin-card bal clickable${finF===''?' active-filter':''}" data-finfilter="" role="button" tabindex="0"><div class="lbl"><span class="ico">${svg(ICON.finance)}</span> Saldo</div><div class="val">${moneyBR(rec-desp)}</div></div>
     </div>
     <div class="toolbar">
       <select class="filter-sel" id="fTipo"><option value="">Todos</option><option value="receita" ${finF==='receita'?'selected':''}>Receitas</option><option value="despesa" ${finF==='despesa'?'selected':''}>Despesas</option></select>
@@ -1346,6 +1349,11 @@ RENDER.financeiro=async function(){
   </div>`;
   $('#fTipo').onchange=e=>{finF=e.target.value;RENDER.financeiro();};
   $('#fMes').onchange=e=>{finMonth=e.target.value;RENDER.financeiro();};
+  $$('[data-finfilter]').forEach(c=>{
+    const apply=()=>{finF=c.dataset.finfilter;RENDER.financeiro();};
+    c.onclick=apply;
+    c.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();apply();}};
+  });
   $$('#addFin').forEach(b=>b.onclick=()=>finForm());
   $$('[data-edit]').forEach(b=>b.onclick=()=>finForm(b.dataset.edit));
   $$('[data-del]').forEach(b=>b.onclick=()=>confirmDel('financeiro',b.dataset.del,'lançamento',RENDER.financeiro));
@@ -2631,8 +2639,9 @@ $('#globalSearch').onkeydown=async e=>{
 /* ---------- clock ---------- */
 function tickClock(){
   const d=new Date();
-  $('#dateTop').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
-  $('#timeTop').textContent=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const dt=$('#dateTop'),tt=$('#timeTop');
+  if(dt)dt.textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  if(tt)tt.textContent=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
 
 /* ---------- seed: sistema limpo, sem dados demo ---------- */
