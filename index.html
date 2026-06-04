@@ -154,8 +154,9 @@ body.has-bg .content{background:transparent}
 }
 .hamburger{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);place-items:center}
 .hamburger svg{width:20px;height:20px}
-.page-head h1{font-family:var(--serif);font-size:25px;font-weight:600;color:var(--ink);line-height:1.1;letter-spacing:.2px}
-.page-head p{font-size:12.5px;color:var(--text-2);margin-top:1px}
+.page-head{min-width:0;flex-shrink:1;overflow:hidden}
+.page-head h1{font-family:var(--serif);font-size:25px;font-weight:600;color:var(--ink);line-height:1.15;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.page-head p{font-size:12.5px;color:var(--text-2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar-search{
   margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--surface);
   border:1px solid var(--line);border-radius:11px;padding:9px 14px;width:280px;transition:border .15s,box-shadow .15s;
@@ -428,6 +429,10 @@ tbody tr:last-child td{border-bottom:none}
 .time-card .tc-lbl{font-size:12px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .time-card .tc-val{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--ink);margin-top:10px}
 .time-card .tc-sub{font-size:12px;color:var(--text-3);margin-top:4px}
+.time-card.clickable{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.time-card.clickable:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(22,36,63,.14);border-color:var(--brass)}
+.time-card.clickable:active{transform:translateY(-1px)}
+.time-card.clickable.active-filter{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass-soft) inset}
 
 /* ===== Dosimetria ===== */
 .dos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
@@ -625,8 +630,8 @@ tbody tr:last-child td{border-bottom:none}
    ============================================================ */
 
 /* ---------- IndexedDB wrapper ---------- */
-const DB_NAME='lexora_db', DB_VER=4;
-const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos','usuarios','logs'];
+const DB_NAME='lexora_db', DB_VER=5;
+const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos','contratosAcomp','usuarios','logs'];
 let db;
 
 function openDB(){
@@ -691,6 +696,7 @@ const ICON={
   timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6M12 2v2"/>',
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   key:'<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>',
+  repeat:'<path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/>',
 };
 const svg=(p,sw=1.8,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 
@@ -724,6 +730,7 @@ const PAGES=[
   {id:'agenda',label:'Agenda',icon:'agenda',title:'Agenda',sub:'Audiências e compromissos',group:'Operação'},
   {id:'tarefas',label:'Tarefas',icon:'tasks',title:'Tarefas',sub:'Quadro de atividades',group:'Operação'},
   {id:'financeiro',label:'Financeiro',icon:'finance',title:'Financeiro',sub:'Honorários, receitas e despesas',group:'Gestão'},
+  {id:'acompanhamento',label:'Acompanhamento',icon:'repeat',title:'Acompanhamento',sub:'Contratos anuais com mensalidade',group:'Gestão'},
   {id:'documentos',label:'Documentos',icon:'docs',title:'Documentos',sub:'Modelos e anotações',group:'Gestão'},
   {id:'contratos',label:'Contratos & Peças',icon:'contract',title:'Contratos & Peças Jurídicas',sub:'Petições criminais, trabalhistas e previdenciárias — contratos, recibos e procurações',group:'Gestão'},
   {id:'honorarios',label:'Honorários/h',icon:'timer',title:'Controle por Hora',sub:'Lançamento e faturamento por hora trabalhada',group:'Gestão'},
@@ -742,7 +749,7 @@ function userCanAccess(pageId) {
   if (!perms || perms.length === 0) {
     // default permissions by role if never configured
     const defaults = {
-      advogado: ['dashboard','clientes','processos','prazos','agenda','tarefas','financeiro','documentos','contratos','honorarios','dosimetria','relatorios'],
+      advogado: ['dashboard','clientes','processos','prazos','agenda','tarefas','financeiro','acompanhamento','documentos','contratos','honorarios','dosimetria','relatorios'],
       assistente: ['dashboard','clientes','prazos','agenda','tarefas','documentos'],
     };
     return (defaults[currentUser.role] || ['dashboard']).includes(pageId);
@@ -783,14 +790,17 @@ const RENDER={};
 
 /* ----- DASHBOARD ----- */
 RENDER.dashboard=async function(){
-  const [cli,proc,prazos,comp,fin,tar]=await Promise.all(
-    ['clientes','processos','prazos','compromissos','financeiro','tarefas'].map(dbAll));
+  const [cli,proc,prazos,comp,fin,tar,acomp]=await Promise.all(
+    ['clientes','processos','prazos','compromissos','financeiro','tarefas','contratosAcomp'].map(dbAll));
   const procAtivos=proc.filter(p=>p.status!=='Encerrado'&&p.status!=='Arquivado').length;
   const prazosAbertos=prazos.filter(p=>p.status!=='cumprido');
   const prazosUrg=prazosAbertos.filter(p=>{const d=daysUntil(p.dataPrazo);return d!==null&&d<=7;}).length;
   const receita=fin.filter(f=>f.tipo==='receita'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
   const despesa=fin.filter(f=>f.tipo==='despesa'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
   const saldo=receita-despesa;
+  const mrr=acomp.filter(c=>c.status==='ativo').reduce((s,c)=>s+Number(c.valorMensal||0),0);
+  let mensAtraso=0,mensAtrasoVal=0;
+  acomp.forEach(c=>(c.parcelas||[]).forEach(p=>{if(p.status!=='pago'){const d=daysUntil(p.vencimento);if(d!==null&&d<0){mensAtraso++;mensAtrasoVal+=Number(p.valor||0);}}}));
 
   const upcoming=[...prazosAbertos.map(p=>({tipo:'prazo',data:p.dataPrazo,titulo:p.descricao,meta:procLabel(proc,p.processoId)})),
     ...comp.filter(c=>c.data>=todayISO()).map(c=>({tipo:c.tipo||'compromisso',data:c.data,hora:c.hora,titulo:c.titulo,meta:c.local||''}))]
@@ -842,6 +852,14 @@ RENDER.dashboard=async function(){
             <span style="color:var(--text-2);font-size:13px">Honorários a receber (pendente)</span>
             <b style="font-family:var(--serif);font-size:18px;color:var(--amber)">${moneyBR(fin.filter(f=>f.tipo==='receita'&&f.status!=='pago').reduce((s,f)=>s+Number(f.valor||0),0))}</b>
           </div>
+          <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="color:var(--text-2);font-size:13px">Receita recorrente (mensalidades)</span>
+            <b style="font-family:var(--serif);font-size:18px;color:var(--green)">${moneyBR(mrr)}<span style="font-size:12px;color:var(--text-3);font-family:var(--sans)">/mês</span></b>
+          </div>
+          ${mensAtraso>0?`<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="color:var(--red);font-size:13px">Mensalidades em atraso</span>
+            <b style="font-family:var(--serif);font-size:18px;color:var(--red)">${mensAtraso} · ${moneyBR(mensAtrasoVal)}</b>
+          </div>`:''}
         </div>
       </div>
     </div>
@@ -1363,7 +1381,7 @@ async function finForm(id){
   const f=id?await dbGet('financeiro',id):{tipo:'receita',status:'pago',data:todayISO()};
   const cli=(await dbAll('clientes')).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const proc=await dbAll('processos');
-  const cats={receita:['Honorários contratuais','Honorários de êxito','Honorários sucumbenciais','Consultoria','Outros'],despesa:['Custas processuais','Diligências','Aluguel','Salários','Software','Material','Tributos','Outros']};
+  const cats={receita:['Mensalidade — Acompanhamento','Honorários contratuais','Honorários de êxito','Honorários sucumbenciais','Consultoria','Outros'],despesa:['Custas processuais','Diligências','Aluguel','Salários','Software','Material','Tributos','Outros']};
   openModal(`
     <div class="modal-head"><div><h2>${id?'Editar':'Novo'} lançamento</h2><p>Receita ou despesa</p></div>
       <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
@@ -2743,6 +2761,373 @@ async function honForm(id,valorHoraPad){
 }
 
 /* ============================================================
+   CONTRATOS DE ACOMPANHAMENTO (ANUAL c/ MENSALIDADE)
+   Gestão de contratos recorrentes, planos de pagamento,
+   baixa de mensalidades (integra ao financeiro), geração de
+   contrato em PDF e recibo por parcela.
+   ============================================================ */
+let acompFilter='ativos';
+
+/* ---- helpers de data/parcela ---- */
+function addMonthsISO(iso,n){
+  const d=new Date((iso||todayISO())+'T00:00:00');const day=d.getDate();
+  d.setDate(1);d.setMonth(d.getMonth()+n);
+  const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  d.setDate(Math.min(day,last));
+  return d.toISOString().slice(0,10);
+}
+function competenciaParcela(dataInicio,idx){
+  const b=new Date((dataInicio||todayISO())+'T00:00:00');
+  const dt=new Date(b.getFullYear(),b.getMonth()+idx,1);
+  return dt.toISOString().slice(0,7);
+}
+function vencimentoParcela(dataInicio,idx,diaVenc){
+  const b=new Date((dataInicio||todayISO())+'T00:00:00');
+  const dt=new Date(b.getFullYear(),b.getMonth()+idx,1);
+  const last=new Date(dt.getFullYear(),dt.getMonth()+1,0).getDate();
+  dt.setDate(Math.min(Number(diaVenc)||10,last));
+  return dt.toISOString().slice(0,10);
+}
+function fmtComp(comp){
+  if(!comp)return '—';const[y,m]=comp.split('-');
+  const M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return `${M[Number(m)-1]||m}/${y}`;
+}
+function parcelaSituacao(p){
+  if(p.status==='pago')return{key:'pago',label:'Paga',cls:'bg-green'};
+  const d=daysUntil(p.vencimento);
+  if(d===null)return{key:'pendente',label:'Pendente',cls:'bg-gray'};
+  if(d<0)return{key:'atrasado',label:'Em atraso',cls:'bg-red'};
+  if(d===0)return{key:'hoje',label:'Vence hoje',cls:'bg-amber'};
+  if(d<=7)return{key:'avencer',label:`Vence em ${d}d`,cls:'bg-amber'};
+  return{key:'futura',label:'A vencer',cls:'bg-blue'};
+}
+function gerarParcelas(ct,anteriores){
+  anteriores=anteriores||[];
+  const pagas={};anteriores.forEach(p=>{if(p.status==='pago')pagas[p.competencia]=p;});
+  const out=[];const meses=Number(ct.meses)||12;
+  for(let i=0;i<meses;i++){
+    const comp=competenciaParcela(ct.dataInicio,i);
+    if(pagas[comp]){out.push(pagas[comp]);continue;}
+    out.push({competencia:comp,vencimento:vencimentoParcela(ct.dataInicio,i,ct.diaVenc),valor:Number(ct.valorMensal)||0,status:'pendente',dataPagamento:null,finId:null,forma:''});
+  }
+  return out;
+}
+async function proximoNumeroAcomp(){
+  const all=await dbAll('contratosAcomp');const ano=new Date().getFullYear();
+  const n=all.filter(c=>(c.numero||'').endsWith('/'+ano)).length+1;
+  return `ACMP-${String(n).padStart(3,'0')}/${ano}`;
+}
+
+RENDER.acompanhamento=async function(){
+  const contratos=await dbAll('contratosAcomp');
+  const cli=await dbAll('clientes');
+  const ativos=contratos.filter(c=>c.status==='ativo');
+  const mrr=ativos.reduce((s,c)=>s+Number(c.valorMensal||0),0);
+  const mesAtual=todayISO().slice(0,7);
+  let aReceberMes=0,atrasoVal=0,atrasoQt=0;
+  contratos.forEach(c=>(c.parcelas||[]).forEach(p=>{
+    if(p.competencia===mesAtual&&p.status!=='pago')aReceberMes+=Number(p.valor||0);
+    if(parcelaSituacao(p).key==='atrasado'){atrasoVal+=Number(p.valor||0);atrasoQt++;}
+  }));
+  let lista=contratos.slice();
+  if(acompFilter==='ativos')lista=lista.filter(c=>c.status==='ativo');
+  else if(acompFilter==='atraso')lista=lista.filter(c=>(c.parcelas||[]).some(p=>parcelaSituacao(p).key==='atrasado'));
+  else if(acompFilter==='encerrados')lista=lista.filter(c=>c.status==='encerrado');
+  lista.sort((a,b)=>(b.dataCadastro||'').localeCompare(a.dataCadastro||''));
+
+  $('#content').innerHTML=`<div class="view">
+    <div class="time-summary">
+      <div class="time-card clickable${acompFilter==='ativos'?' active-filter':''}" data-acompfilter="ativos" role="button" tabindex="0"><div class="tc-lbl">Contratos ativos</div><div class="tc-val">${ativos.length}</div><div class="tc-sub">de ${contratos.length} no total</div></div>
+      <div class="time-card clickable${acompFilter==='ativos'?' active-filter':''}" data-acompfilter="ativos" role="button" tabindex="0"><div class="tc-lbl">Receita recorrente</div><div class="tc-val" style="color:var(--green)">${moneyBR(mrr)}</div><div class="tc-sub">por mês (MRR)</div></div>
+      <div class="time-card clickable${acompFilter==='todos'?' active-filter':''}" data-acompfilter="todos" role="button" tabindex="0"><div class="tc-lbl">A receber este mês</div><div class="tc-val" style="color:var(--amber)">${moneyBR(aReceberMes)}</div><div class="tc-sub">${fmtComp(mesAtual)}</div></div>
+      <div class="time-card clickable${acompFilter==='atraso'?' active-filter':''}" data-acompfilter="atraso" role="button" tabindex="0"><div class="tc-lbl">Em atraso</div><div class="tc-val" style="color:var(--red)">${moneyBR(atrasoVal)}</div><div class="tc-sub">${atrasoQt} mensalidade${atrasoQt!==1?'s':''}</div></div>
+    </div>
+    ${atrasoQt>0?`<div style="background:var(--red-bg);border:1px solid var(--red);border-radius:11px;padding:12px 16px;margin-bottom:18px;font-size:13.5px;color:var(--red);display:flex;align-items:center;gap:10px">${svg('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/>',1.8,18)}<span>Há <b>${atrasoQt} mensalidade(s)</b> em atraso, somando <b>${moneyBR(atrasoVal)}</b>.</span></div>`:''}
+    <div class="toolbar">
+      <select class="filter-sel" id="fAcomp">
+        <option value="ativos" ${acompFilter==='ativos'?'selected':''}>Somente ativos</option>
+        <option value="atraso" ${acompFilter==='atraso'?'selected':''}>Com atraso</option>
+        <option value="encerrados" ${acompFilter==='encerrados'?'selected':''}>Encerrados</option>
+        <option value="todos" ${acompFilter==='todos'?'selected':''}>Todos</option>
+      </select>
+      <button class="btn btn-primary ml-auto" id="addAcomp">${svg(ICON.plus)} Novo contrato</button>
+    </div>
+    ${lista.length?`<div class="table-wrap"><div class="tbl-scroll"><table>
+      <thead><tr><th>Contrato</th><th>Cliente</th><th>Mensalidade</th><th>Vigência</th><th>Parcelas</th><th>Situação</th><th></th></tr></thead>
+      <tbody>${lista.map(c=>{
+        const pcs=c.parcelas||[];const pagas=pcs.filter(p=>p.status==='pago').length;
+        const atras=pcs.filter(p=>parcelaSituacao(p).key==='atrasado').length;
+        const fim=c.dataInicio?addMonthsISO(c.dataInicio,Number(c.meses)||12):null;
+        const stB=c.status==='ativo'?(atras>0?'<span class="badge bg-red"><span class="bdot"></span>Inadimplente</span>':'<span class="badge bg-green"><span class="bdot"></span>Ativo</span>'):c.status==='suspenso'?'<span class="badge bg-amber"><span class="bdot"></span>Suspenso</span>':'<span class="badge bg-gray"><span class="bdot"></span>Encerrado</span>';
+        return `<tr data-open="${c.id}" style="cursor:pointer">
+          <td><div class="cell-strong">${esc(c.numero||'—')}</div><div class="cell-sub">${esc(c.objeto||'Acompanhamento')}</div></td>
+          <td>${esc(cliName(cli,c.clienteId))}</td>
+          <td class="cell-strong">${moneyBR(c.valorMensal)}<div class="cell-sub" style="font-weight:400">venc. dia ${c.diaVenc||10}</div></td>
+          <td>${fmtDate(c.dataInicio)}<div class="cell-sub">até ${fmtDate(fim)}</div></td>
+          <td><span class="badge ${pcs.length&&pagas>=pcs.length?'bg-green':'bg-blue'}"><span class="bdot"></span>${pagas}/${pcs.length}</span></td>
+          <td>${stB}</td>
+          <td><div class="row-actions">
+            <button class="icon-btn" data-open2="${c.id}" title="Abrir">${svg(ICON.eye)}</button>
+            <button class="icon-btn" data-edit="${c.id}" title="Editar">${svg(ICON.edit)}</button>
+            <button class="icon-btn danger" data-del="${c.id}" title="Excluir">${svg(ICON.trash)}</button>
+          </div></td></tr>`;}).join('')}</tbody></table></div></div>`
+    :emptyState('repeat','Nenhum contrato de acompanhamento','Cadastre contratos anuais com mensalidade para gerir o acompanhamento processual de execução e a receita recorrente do escritório.','Novo contrato','addAcomp')}
+  </div>`;
+  if($('#fAcomp'))$('#fAcomp').onchange=e=>{acompFilter=e.target.value;RENDER.acompanhamento();};
+  $$('[data-acompfilter]').forEach(c=>{
+    const apply=()=>{acompFilter=c.dataset.acompfilter;RENDER.acompanhamento();};
+    c.onclick=apply;
+    c.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();apply();}};
+  });
+  $$('#addAcomp').forEach(b=>b.onclick=()=>acompForm());
+  $$('[data-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();acompForm(b.dataset.edit);});
+  $$('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();confirmDel('contratosAcomp',b.dataset.del,'contrato',RENDER.acompanhamento);});
+  $$('[data-open2]').forEach(b=>b.onclick=e=>{e.stopPropagation();acompDetail(b.dataset.open2);});
+  $$('[data-open]').forEach(r=>r.onclick=()=>acompDetail(r.dataset.open));
+  $('.view').classList.add('active');
+};
+
+async function acompForm(id){
+  const ct=id?await dbGet('contratosAcomp',id):{status:'ativo',meses:12,diaVenc:10,dataInicio:todayISO(),objeto:'Acompanhamento processual de execução',area:'Execução',reajuste:'Nenhum'};
+  const cli=(await dbAll('clientes')).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const proc=await dbAll('processos');
+  const selProc=new Set(ct.processoIds||[]);
+  openModal(`
+    <div class="modal-head"><div><h2>${id?'Editar':'Novo'} contrato de acompanhamento</h2><p>Contrato anual com pagamento mensal</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frm">
+      <div class="field"><label>Cliente <span class="req">*</span></label><select name="clienteId" required><option value="">Selecionar...</option>${cli.map(c=>`<option value="${c.id}" ${ct.clienteId===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}</select></div>
+      <div class="field"><label>Objeto / serviço</label><input name="objeto" value="${esc(ct.objeto||'')}"></div>
+      <div class="field"><label>Valor da mensalidade (R$) <span class="req">*</span></label><input name="valorMensal" type="number" step="0.01" min="0" value="${esc(ct.valorMensal||'')}" required></div>
+      <div class="field"><label>Dia de vencimento</label><input name="diaVenc" type="number" min="1" max="28" value="${esc(ct.diaVenc||10)}"></div>
+      <div class="field"><label>Data de início <span class="req">*</span></label><input name="dataInicio" type="date" value="${esc(ct.dataInicio||todayISO())}" required></div>
+      <div class="field"><label>Duração (meses)</label><input name="meses" type="number" min="1" max="60" value="${esc(ct.meses||12)}"></div>
+      <div class="field"><label>Índice de reajuste anual</label><select name="reajuste">${['Nenhum','IGP-M','IPCA','INPC'].map(r=>`<option ${ct.reajuste===r?'selected':''}>${r}</option>`).join('')}</select></div>
+      <div class="field"><label>Situação</label><select name="status">${[['ativo','Ativo'],['suspenso','Suspenso'],['encerrado','Encerrado']].map(o=>`<option value="${o[0]}" ${ct.status===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>
+      <div class="field col-2"><label>Processos vinculados</label>
+        <div style="max-height:130px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:7px">
+          ${proc.length?proc.map(p=>`<label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" name="proc" value="${p.id}" ${selProc.has(p.id)?'checked':''}> ${esc(p.numero||p.tipoAcao||'Processo')} — ${esc(cliName(cli,p.clienteId))}</label>`).join(''):'<span style="font-size:12.5px;color:var(--text-3)">Nenhum processo cadastrado ainda.</span>'}
+        </div></div>
+      <div class="field col-2"><label>Observações</label><textarea name="obs" rows="2">${esc(ct.obs||'')}</textarea></div>
+      <div class="field col-2"><div style="background:var(--amber-bg);border-radius:9px;padding:10px 13px;font-size:12.5px;color:var(--brass-deep);display:flex;gap:8px;align-items:center">${svg(ICON.repeat,1.8,15)}<span>Ao salvar, o plano de mensalidades é gerado automaticamente. Parcelas já pagas são preservadas ao editar.</span></div></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="save">${svg(ICON.check)} Salvar contrato</button></div>`,true);
+  $('#save').onclick=async()=>{
+    const fd=new FormData($('#frm'));
+    if(!fd.get('clienteId'))return toast('Selecione o cliente','warn');
+    if(!fd.get('valorMensal'))return toast('Informe o valor da mensalidade','warn');
+    if(!fd.get('dataInicio'))return toast('Informe a data de início','warn');
+    const novo={
+      id:id||uid(),
+      numero:ct.numero||await proximoNumeroAcomp(),
+      clienteId:fd.get('clienteId'),
+      processoIds:fd.getAll('proc'),
+      objeto:(fd.get('objeto')||'').trim()||'Acompanhamento processual',
+      area:ct.area||'Execução',
+      valorMensal:Number(fd.get('valorMensal')),
+      diaVenc:Number(fd.get('diaVenc'))||10,
+      dataInicio:fd.get('dataInicio'),
+      meses:Number(fd.get('meses'))||12,
+      reajuste:fd.get('reajuste'),
+      status:fd.get('status'),
+      obs:(fd.get('obs')||'').trim(),
+      dataCadastro:ct.dataCadastro||todayISO()
+    };
+    novo.parcelas=gerarParcelas(novo,ct.parcelas);
+    await dbPut('contratosAcomp',novo);
+    closeModal();toast(id?'Contrato atualizado':'Contrato criado');
+    if(id)acompDetail(id);else RENDER.acompanhamento();
+  };
+}
+
+async function acompDetail(id){
+  const ct=await dbGet('contratosAcomp',id);
+  if(!ct){toast('Contrato não encontrado','warn');return RENDER.acompanhamento();}
+  const cli=await dbAll('clientes');const proc=await dbAll('processos');
+  const pcs=ct.parcelas||[];
+  const pagas=pcs.filter(p=>p.status==='pago');
+  const totalPago=pagas.reduce((s,p)=>s+Number(p.valor||0),0);
+  const totalContrato=pcs.reduce((s,p)=>s+Number(p.valor||0),0);
+  const atras=pcs.filter(p=>parcelaSituacao(p).key==='atrasado');
+  const fim=ct.dataInicio?addMonthsISO(ct.dataInicio,Number(ct.meses)||12):null;
+  const procNomes=(ct.processoIds||[]).map(pid=>{const p=proc.find(x=>x.id===pid);return p?(p.numero||p.tipoAcao||'Processo'):null;}).filter(Boolean);
+  const stB=ct.status==='ativo'?'<span class="badge bg-green"><span class="bdot"></span>Ativo</span>':ct.status==='suspenso'?'<span class="badge bg-amber"><span class="bdot"></span>Suspenso</span>':'<span class="badge bg-gray"><span class="bdot"></span>Encerrado</span>';
+
+  $('#content').innerHTML=`<div class="view">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" id="backAcomp">‹ Voltar</button>
+      <h2 style="font-family:var(--serif);font-size:20px;color:var(--ink);margin:0">${esc(ct.numero||'Contrato')}</h2>
+      ${stB}
+      <div class="ml-auto" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="editAcomp">${svg(ICON.edit)} Editar</button>
+        <button class="btn btn-ink" id="pdfContrato">${svg(ICON.report)} Gerar contrato (PDF)</button>
+      </div>
+    </div>
+    <div class="dash-grid" style="margin-bottom:18px">
+      <div class="panel"><div class="panel-body" style="padding:18px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;font-size:13.5px">
+          <div><div style="color:var(--text-3);font-size:12px">Cliente</div><b style="color:var(--ink)">${esc(cliName(cli,ct.clienteId))}</b></div>
+          <div><div style="color:var(--text-3);font-size:12px">Objeto</div><b style="color:var(--ink)">${esc(ct.objeto||'—')}</b></div>
+          <div><div style="color:var(--text-3);font-size:12px">Mensalidade</div><b style="color:var(--ink)">${moneyBR(ct.valorMensal)}</b></div>
+          <div><div style="color:var(--text-3);font-size:12px">Vencimento</div><b style="color:var(--ink)">Todo dia ${ct.diaVenc||10}</b></div>
+          <div><div style="color:var(--text-3);font-size:12px">Vigência</div><b style="color:var(--ink)">${fmtDate(ct.dataInicio)} a ${fmtDate(fim)}</b></div>
+          <div><div style="color:var(--text-3);font-size:12px">Reajuste</div><b style="color:var(--ink)">${esc(ct.reajuste||'Nenhum')}</b></div>
+          ${procNomes.length?`<div style="grid-column:1/-1"><div style="color:var(--text-3);font-size:12px">Processos vinculados</div><b style="color:var(--ink)">${procNomes.map(esc).join(' · ')}</b></div>`:''}
+          ${ct.obs?`<div style="grid-column:1/-1"><div style="color:var(--text-3);font-size:12px">Observações</div><span style="color:var(--text)">${esc(ct.obs)}</span></div>`:''}
+        </div>
+      </div></div>
+      <div class="panel"><div class="panel-body" style="padding:18px">
+        ${finBar('Recebido',totalPago,Math.max(totalContrato,1),'var(--green)')}
+        ${finBar('Total do contrato',totalContrato,Math.max(totalContrato,1),'var(--blue)')}
+        <div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center"><span style="color:var(--text-2);font-size:13px">Parcelas pagas</span><b style="font-family:var(--serif);font-size:17px;color:var(--ink)">${pagas.length}/${pcs.length}</b></div>
+        ${atras.length?`<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center"><span style="color:var(--red);font-size:13px">Em atraso</span><b style="color:var(--red)">${atras.length} · ${moneyBR(atras.reduce((s,p)=>s+Number(p.valor||0),0))}</b></div>`:''}
+      </div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Plano de pagamento — ${pcs.length} mensalidades</h3></div>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th>#</th><th>Competência</th><th>Vencimento</th><th>Valor</th><th>Situação</th><th>Pagamento</th><th></th></tr></thead>
+        <tbody>${pcs.map((p,i)=>{const sit=parcelaSituacao(p);return `<tr>
+          <td class="cell-strong">${i+1}</td>
+          <td>${fmtComp(p.competencia)}</td>
+          <td>${fmtDate(p.vencimento)}</td>
+          <td class="cell-strong">${moneyBR(p.valor)}</td>
+          <td><span class="badge ${sit.cls}"><span class="bdot"></span>${sit.label}</span></td>
+          <td>${p.status==='pago'?`${fmtDate(p.dataPagamento)}${p.forma?' · '+esc(p.forma):''}`:'—'}</td>
+          <td><div class="row-actions">
+            ${p.status==='pago'?`<button class="icon-btn" data-recibo="${i}" title="Gerar recibo">${svg(ICON.finance)}</button><button class="icon-btn danger" data-estorno="${i}" title="Estornar pagamento">${svg('<path d="M3 7v6h6"/><path d="M21 13a9 9 0 1 1-3-7.7L21 8"/>',1.8,18)}</button>`:`<button class="icon-btn" data-pagar="${i}" title="Dar baixa (pago)">${svg(ICON.check)}</button>`}
+          </div></td></tr>`;}).join('')}</tbody></table></div>
+    </div>
+  </div>`;
+  $('#backAcomp').onclick=()=>RENDER.acompanhamento();
+  $('#editAcomp').onclick=()=>acompForm(id);
+  $('#pdfContrato').onclick=async()=>{const cfg=(await dbGet('config','escritorio'))||{};const c=cli.find(x=>x.id===ct.clienteId);gerarDocPDF(contratoAcompTexto(ct,c,cfg,proc),'Contrato de Acompanhamento Processual',cfg,c);};
+  $$('[data-pagar]').forEach(b=>b.onclick=()=>pagarParcela(id,Number(b.dataset.pagar)));
+  $$('[data-estorno]').forEach(b=>b.onclick=()=>estornarParcela(id,Number(b.dataset.estorno)));
+  $$('[data-recibo]').forEach(b=>b.onclick=async()=>{const cfg=(await dbGet('config','escritorio'))||{};const c=cli.find(x=>x.id===ct.clienteId);gerarDocPDF(reciboParcelaTexto(ct,ct.parcelas[Number(b.dataset.recibo)],c,cfg),'Recibo de Mensalidade',cfg,c);});
+  $('.view').classList.add('active');
+}
+
+async function pagarParcela(id,idx){
+  const ct=await dbGet('contratosAcomp',id);if(!ct||!ct.parcelas||!ct.parcelas[idx])return;
+  const p=ct.parcelas[idx];
+  openModal(`
+    <div class="modal-head"><div><h2>Dar baixa na mensalidade</h2><p>${fmtComp(p.competencia)} — ${moneyBR(p.valor)}</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frm">
+      <div class="field"><label>Data do pagamento</label><input name="data" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>Valor recebido (R$)</label><input name="valor" type="number" step="0.01" value="${esc(p.valor)}"></div>
+      <div class="field col-2"><label>Forma de pagamento</label><select name="forma">${['PIX','Transferência','Dinheiro','Cartão','Boleto','Cheque'].map(m=>`<option>${m}</option>`).join('')}</select></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="save">${svg(ICON.check)} Confirmar pagamento</button></div>`);
+  $('#save').onclick=async()=>{
+    const fd=new FormData($('#frm'));
+    const valor=Number(fd.get('valor'))||Number(p.valor)||0;
+    const data=fd.get('data')||todayISO();
+    const finId=p.finId||uid();
+    await dbPut('financeiro',{id:finId,tipo:'receita',descricao:`Mensalidade ${fmtComp(p.competencia)} — ${ct.numero||'Acompanhamento'}`,valor:String(valor),categoria:'Mensalidade — Acompanhamento',data,status:'pago',clienteId:ct.clienteId,processoId:(ct.processoIds||[])[0]||'',formaPagamento:fd.get('forma')});
+    p.status='pago';p.dataPagamento=data;p.forma=fd.get('forma');p.valor=valor;p.finId=finId;
+    await dbPut('contratosAcomp',ct);
+    closeModal();toast('Pagamento registrado e lançado no financeiro');acompDetail(id);
+  };
+}
+async function estornarParcela(id,idx){
+  const ct=await dbGet('contratosAcomp',id);if(!ct||!ct.parcelas||!ct.parcelas[idx])return;
+  const p=ct.parcelas[idx];
+  if(p.finId){try{await dbDel('financeiro',p.finId);}catch(e){}}
+  p.status='pendente';p.dataPagamento=null;p.forma='';p.finId=null;
+  await dbPut('contratosAcomp',ct);
+  toast('Pagamento estornado');acompDetail(id);
+}
+
+/* ---- textos de documentos ---- */
+function contratoAcompTexto(ct,c,cfg,proc){
+  cfg=cfg||{};
+  const adv=cfg.nome||'[NOME DO ADVOGADO]';const oab=cfg.oab||'[OAB]';const advEnd=cfg.endereco||'[ENDEREÇO DO ESCRITÓRIO]';
+  const cliNome=c?.nome||'[CLIENTE]';const cliDoc=c?.cpfCnpj?` (CPF/CNPJ: ${c.cpfCnpj})`:'';const cliEnd=c?.endereco||'[ENDEREÇO]';
+  const hoje=new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+  const meses=Number(ct.meses)||12;
+  const valorMensal=moneyBR(ct.valorMensal);
+  const valorTotal=moneyBR((Number(ct.valorMensal)||0)*meses);
+  const foro=cfg.cidade||'[Comarca]';
+  const procRef=(ct.processoIds||[]).map(pid=>{const p=(proc||[]).find(x=>x.id===pid);return p?(p.numero||p.tipoAcao):null;}).filter(Boolean);
+  const reaj=ct.reajuste&&ct.reajuste!=='Nenhum'?`O valor da mensalidade será reajustado anualmente pela variação acumulada do índice ${ct.reajuste}, ou outro que vier a substituí-lo.`:`O valor da mensalidade permanecerá fixo durante a vigência deste contrato, salvo acordo expresso entre as partes.`;
+  return `CONTRATO DE PRESTAÇÃO DE SERVIÇOS ADVOCATÍCIOS
+ACOMPANHAMENTO PROCESSUAL — REGIME DE MENSALIDADE
+
+Pelo presente instrumento particular, as partes abaixo qualificadas celebram o presente CONTRATO DE PRESTAÇÃO DE SERVIÇOS ADVOCATÍCIOS, sob regime de acompanhamento processual com remuneração mensal, que se regerá pelas cláusulas e condições seguintes:
+
+CONTRATANTE: ${cliNome}${cliDoc}, residente e domiciliado(a) em ${cliEnd}.
+
+CONTRATADO(A): ${adv}, advogado(a) inscrito(a) na OAB sob o nº ${oab}, com escritório profissional em ${advEnd}.
+
+CLÁUSULA 1ª — DO OBJETO
+O(A) CONTRATADO(A) obriga-se a prestar serviços de ${ct.objeto||'acompanhamento processual'}, compreendendo o acompanhamento integral dos processos e procedimentos de interesse do CONTRATANTE${procRef.length?`, em especial: ${procRef.join('; ')}`:''}, incluindo o monitoramento de andamentos, intimações, prazos e atos de execução, a orientação jurídica e a adoção das medidas processuais cabíveis.
+
+CLÁUSULA 2ª — DO PRAZO E DA VIGÊNCIA
+O presente contrato vigorará pelo prazo de ${meses} (${meses===12?'doze':meses}) meses, com início em ${fmtDate(ct.dataInicio)}, podendo ser renovado por igual período mediante acordo entre as partes.
+
+CLÁUSULA 3ª — DA REMUNERAÇÃO (MENSALIDADE)
+Pelos serviços prestados, o CONTRATANTE pagará ao(à) CONTRATADO(A) a quantia mensal de ${valorMensal}, totalizando, ao longo da vigência, o montante de ${valorTotal}, devendo cada mensalidade ser quitada até o dia ${ct.diaVenc||10} de cada mês.
+Parágrafo único. ${reaj}
+
+CLÁUSULA 4ª — DA MORA E DA INADIMPLÊNCIA
+O atraso no pagamento de qualquer mensalidade implicará multa de 2% (dois por cento) sobre o valor em atraso, juros de mora de 1% (um por cento) ao mês e correção monetária, podendo o(a) CONTRATADO(A) suspender os serviços após 30 (trinta) dias de inadimplência, sem prejuízo da cobrança judicial.
+
+CLÁUSULA 5ª — DAS DESPESAS PROCESSUAIS
+As custas, emolumentos, diligências, honorários periciais e demais despesas dos processos correrão por conta exclusiva do CONTRATANTE, não estando incluídas no valor da mensalidade.
+
+CLÁUSULA 6ª — DAS OBRIGAÇÕES DO(A) CONTRATADO(A)
+Prestar os serviços com zelo, diligência e boa-fé, observando o Código de Ética e Disciplina da OAB, e manter o CONTRATANTE informado sobre o andamento dos processos.
+
+CLÁUSULA 7ª — DA RESCISÃO
+O contrato poderá ser rescindido por qualquer das partes mediante comunicação prévia e escrita, com antecedência mínima de 30 (trinta) dias, ficando devidas as mensalidades proporcionais aos serviços prestados até a efetiva rescisão.
+
+CLÁUSULA 8ª — DOS HONORÁRIOS DE SUCUMBÊNCIA
+Os honorários de sucumbência, quando arbitrados judicialmente, pertencerão ao(à) CONTRATADO(A), nos termos do art. 85, §14, do CPC e do Estatuto da Advocacia (Lei 8.906/94).
+
+CLÁUSULA 9ª — DO FORO
+As partes elegem o foro da Comarca de ${foro} para dirimir eventuais controvérsias oriundas deste contrato, renunciando a qualquer outro, por mais privilegiado que seja.${ct.obs?`\n\nCLÁUSULA 10ª — DISPOSIÇÕES ESPECIAIS\n${ct.obs}`:''}
+
+E, por estarem assim justas e contratadas, firmam o presente instrumento em 02 (duas) vias de igual teor e forma.
+
+${foro}, ${hoje}.
+
+_____________________________________________
+${cliNome}
+CONTRATANTE
+
+_____________________________________________
+${adv} — OAB ${oab}
+CONTRATADO(A)
+
+_____________________________________________          _____________________________________________
+Testemunha 1                                           Testemunha 2`;
+}
+function reciboParcelaTexto(ct,p,c,cfg){
+  cfg=cfg||{};p=p||{};
+  const adv=cfg.nome||'[NOME DO ADVOGADO]';const oab=cfg.oab||'[OAB]';
+  const cliNome=c?.nome||'[CLIENTE]';const cliDoc=c?.cpfCnpj?` (CPF/CNPJ: ${c.cpfCnpj})`:'';
+  const valor=moneyBR(p.valor);const ext=numPorExtenso(Number(p.valor));
+  const dataPg=p.dataPagamento?fmtDate(p.dataPagamento):new Date().toLocaleDateString('pt-BR');
+  const foro=cfg.cidade||'[Cidade]';
+  return `RECIBO DE PAGAMENTO DE HONORÁRIOS ADVOCATÍCIOS
+
+Recebi de ${cliNome}${cliDoc} a importância de ${valor} (${ext}), referente à mensalidade de honorários advocatícios do Contrato de Acompanhamento Processual nº ${ct.numero||''}, competência ${fmtComp(p.competencia)}${p.forma?`, paga via ${p.forma}`:''}.
+
+Para clareza e como documento de quitação do valor ora recebido, firmo o presente recibo.
+
+${foro}, ${dataPg}.
+
+_____________________________________________
+${adv}
+OAB ${oab}`;
+}
+
+/* ============================================================
    CALCULADORA DE DOSIMETRIA PENAL — VERSÃO MELHORADA
    ============================================================ */
 RENDER.dosimetria=async function(){
@@ -3619,7 +4004,7 @@ async function managePermissions(id) {
 
   // Default permissions by role
   const defaultPerms = {
-    advogado: ['dashboard','clientes','processos','prazos','agenda','tarefas','financeiro','documentos','contratos','honorarios','dosimetria','relatorios'],
+    advogado: ['dashboard','clientes','processos','prazos','agenda','tarefas','financeiro','acompanhamento','documentos','contratos','honorarios','dosimetria','relatorios'],
     assistente: ['dashboard','clientes','prazos','agenda','tarefas','documentos'],
   };
   const currentPerms = u.permissions || defaultPerms[u.role] || ['dashboard'];
