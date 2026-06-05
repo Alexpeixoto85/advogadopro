@@ -154,17 +154,17 @@ body.has-bg .content{background:transparent}
 }
 .hamburger{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);place-items:center}
 .hamburger svg{width:20px;height:20px}
-.page-head{min-width:0;flex-shrink:1;overflow:hidden}
+.page-head{flex:1 1 0;min-width:0;overflow:hidden}
 .page-head h1{font-family:var(--serif);font-size:25px;font-weight:600;color:var(--ink);line-height:1.15;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .page-head p{font-size:12.5px;color:var(--text-2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar-search{
-  margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--surface);
+  flex-shrink:0;display:flex;align-items:center;gap:9px;background:var(--surface);
   border:1px solid var(--line);border-radius:11px;padding:9px 14px;width:280px;transition:border .15s,box-shadow .15s;
 }
 .topbar-search:focus-within{border-color:var(--brass);box-shadow:0 0 0 3px rgba(176,131,50,.12)}
 .topbar-search svg{width:17px;height:17px;color:var(--text-3);flex-shrink:0}
 .topbar-search input{border:none;outline:none;background:none;width:100%;font-size:14px}
-.topbar-date{font-size:12.5px;color:var(--text-2);text-align:right;line-height:1.3;white-space:nowrap}
+.topbar-date{flex-shrink:0;font-size:12.5px;color:var(--text-2);text-align:right;line-height:1.3;white-space:nowrap}
 .topbar-date b{display:block;color:var(--ink);font-size:13px;text-transform:capitalize}
 
 .content{flex:1;overflow-y:auto;padding:28px;scroll-behavior:smooth}
@@ -397,11 +397,11 @@ tbody tr:last-child td{border-bottom:none}
 .auth-role-btn{display:block;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:600;color:var(--text-2);transition:all .15s;background:var(--surface-2)}
 .auth-role input:checked+.auth-role-btn{border-color:var(--brass);background:var(--amber-bg);color:var(--brass-deep)}
 /* User info in topbar */
-.user-chip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:7px 13px;cursor:pointer;transition:border .15s;position:relative}
+.user-chip{flex-shrink:0;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:7px 13px;cursor:pointer;transition:border .15s;position:relative}
 .user-chip:hover{border-color:var(--brass)}
 .user-chip .uc-av{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--brass-soft);display:grid;place-items:center;font-family:var(--serif);font-size:12px;font-weight:700;flex-shrink:0}
-.user-chip .uc-name{font-size:13px;font-weight:600;color:var(--ink)}
-.user-chip .uc-role{font-size:11px;color:var(--text-2)}
+.user-chip .uc-name{font-size:13px;font-weight:600;color:var(--ink);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-chip .uc-role{font-size:11px;color:var(--text-2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:190px;z-index:200;overflow:hidden;display:none}
 .user-chip:hover .user-menu,.user-chip.open .user-menu{display:block}
 .user-menu-item{display:flex;align-items:center;gap:10px;padding:11px 15px;font-size:13.5px;font-weight:500;color:var(--text);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left}
@@ -527,7 +527,7 @@ tbody tr:last-child td{border-bottom:none}
 .notif-badge.show{display:grid}
 .notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:360px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);z-index:300;display:none;overflow:hidden;animation:pop .22s ease}
 .notif-panel.show{display:block}
-.notif-wrap{position:relative}
+.notif-wrap{position:relative;flex-shrink:0}
 .notif-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--line-2)}
 .notif-head h4{font-family:var(--serif);font-size:16px;color:var(--ink)}
 .notif-head button{font-size:12px;color:var(--brass-deep);font-weight:600;cursor:pointer;background:none;border:none}
@@ -581,7 +581,7 @@ tbody tr:last-child td{border-bottom:none}
 .search-hit-title{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .search-hit-meta{font-size:12px;color:var(--text-2)}
 .search-empty{text-align:center;padding:28px;color:var(--text-3);font-size:13.5px}
-.search-topbar-wrap{position:relative}
+.search-topbar-wrap{position:relative;flex-shrink:0}
 
 /* --- Perfil 360° do cliente --- */
 .client360-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-top:18px}
@@ -803,8 +803,8 @@ tbody tr:last-child td{border-bottom:none}
    ============================================================ */
 
 /* ---------- IndexedDB wrapper ---------- */
-const DB_NAME='lexora_db', DB_VER=5;
-const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos','contratosAcomp','usuarios','logs','anexos'];
+const DB_NAME='lexora_db', DB_VER=6;
+const STORES=['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos','config','honorarios','timesheet','contratos','contratosAcomp','usuarios','logs','anexos','andamentos','leads','interacoes'];
 let db;
 
 function openDB(){
@@ -870,6 +870,13 @@ const ICON={
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   key:'<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>',
   repeat:'<path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/>',
+  funnel:'<path d="M3 4h18l-7 8v6l-4 2v-8z"/>',
+  chart:'<path d="M3 3v18h18M8 16V9M13 16V5M18 16v-4"/>',
+  cake:'<path d="M4 21h16M4 21v-8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8M4 14c2 0 2 1.5 4 1.5S10 14 12 14s2 1.5 4 1.5S18 14 20 14M12 8V5M9 5h.01M12 5h.01M15 5h.01"/>',
+  activity:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
 };
 const svg=(p,sw=1.8,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 
@@ -897,6 +904,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
    ============================================================ */
 const PAGES=[
   {id:'dashboard',label:'Painel',icon:'dash',title:'Painel',sub:'Visão geral do escritório',group:'Principal'},
+  {id:'indicadores',label:'Indicadores',icon:'chart',title:'Indicadores & BI',sub:'Métricas de desempenho, produtividade e metas',group:'Principal'},
+  {id:'crm',label:'Captação (CRM)',icon:'funnel',title:'Captação de Clientes',sub:'Funil de leads e prospecção',group:'Principal'},
   {id:'clientes',label:'Clientes',icon:'clients',title:'Clientes',sub:'Cadastro de pessoas físicas e jurídicas',group:'Principal'},
   {id:'processos',label:'Processos',icon:'cases',title:'Processos',sub:'Acompanhamento processual',group:'Principal'},
   {id:'prazos',label:'Prazos',icon:'deadline',title:'Prazos',sub:'Controle de prazos e intimações',group:'Operação'},
@@ -1132,6 +1141,8 @@ async function cliForm(id){
       <div class="field"><label>RG / Insc. Estadual</label><input name="rg" value="${esc(c.rg||'')}"></div>
       <div class="field"><label>Telefone</label><input name="telefone" value="${esc(c.telefone||'')}" placeholder="(00) 00000-0000"></div>
       <div class="field"><label>E-mail</label><input name="email" type="email" value="${esc(c.email||'')}"></div>
+      <div class="field"><label>Nascimento / Fundação</label><input name="dataNascimento" type="date" value="${esc(c.dataNascimento||'')}"></div>
+      <div class="field"><label>Origem do cliente</label><input name="origem" value="${esc(c.origem||'')}" placeholder="Indicação, site, Google..."></div>
       <div class="field col-2"><label>Endereço</label><input name="endereco" value="${esc(c.endereco||'')}"></div>
       <div class="field col-2"><label>Observações</label><textarea name="observacoes">${esc(c.observacoes||'')}</textarea></div>
     </form></div>
@@ -1143,6 +1154,7 @@ async function cliForm(id){
     if(!nome)return toast('Informe o nome do cliente','warn');
     await dbPut('clientes',{id:id||uid(),tipo:fd.get('tipo'),nome,cpfCnpj:fd.get('cpfCnpj'),rg:fd.get('rg'),
       telefone:fd.get('telefone'),email:fd.get('email'),endereco:fd.get('endereco'),observacoes:fd.get('observacoes'),
+      dataNascimento:fd.get('dataNascimento')||'',origem:fd.get('origem')||'',
       dataCadastro:c.dataCadastro||todayISO()});
     closeModal();toast(id?'Cliente atualizado':'Cliente cadastrado');RENDER.clientes();
   };
@@ -5881,6 +5893,604 @@ document.addEventListener('lexora:login', async ()=>{
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') autoBackupNow(); });
 window.addEventListener('beforeunload', ()=>{ try{ autoBackupNow(); }catch(_){} });
 
+
+
+/* ============================================================
+   MÓDULO 9 — EXPANSÃO LEXORA (inspirado em Astrea / ADVBOX /
+   Projuris / CPJ-3C) — 100% offline / IndexedDB
+   • Andamentos processuais (linha do tempo de movimentações)
+   • CRM / Funil de captação de clientes (leads)
+   • Histórico de atendimentos por cliente + aniversários
+   • Indicadores & BI (métricas, gráficos e metas)
+   ============================================================ */
+
+/* ---------- estilos do módulo ---------- */
+(function(){
+  const css = `
+  .funnel{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px}
+  .fcol{flex:0 0 250px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);min-height:160px;display:flex;flex-direction:column}
+  .fcol.drag-over{border-color:var(--brass);box-shadow:0 0 0 3px rgba(176,131,50,.15)}
+  .fcol-head{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px}
+  .fcol-head .fdot{width:9px;height:9px;border-radius:50%}
+  .fcol-head .kcount{margin-left:auto;background:var(--parch-2);color:var(--text-2);font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:10px}
+  .fcol-body{padding:11px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .lcard{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px 13px;box-shadow:var(--shadow);cursor:grab}
+  .lcard:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)}
+  .lcard h5{font-size:13.5px;font-weight:700;margin-bottom:4px;color:var(--ink)}
+  .lcard .lmeta{font-size:11.5px;color:var(--text-3);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .mov-tl{position:relative;padding-left:22px;margin-top:6px}
+  .mov-tl::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+  .mov-item{position:relative;padding:0 0 16px 0}
+  .mov-item:last-child{padding-bottom:2px}
+  .mov-dot{position:absolute;left:-21px;top:3px;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);background:var(--brass)}
+  .mov-item.acao .mov-dot{background:var(--red)}
+  .mov-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .mov-tipo{font-size:12px;font-weight:700;color:var(--ink)}
+  .mov-date{font-size:11.5px;color:var(--text-3)}
+  .mov-desc{font-size:13px;color:var(--text-2);line-height:1.5;margin-top:3px;white-space:pre-wrap}
+  .mov-del{margin-left:auto;color:var(--text-3);cursor:pointer;font-size:11px}
+  .mov-del:hover{color:var(--red)}
+  .ind-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media(max-width:1100px){.ind-grid{grid-template-columns:1fr}}
+  .hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .hbar-lbl{font-size:12.5px;color:var(--text-2);width:130px;flex:0 0 130px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hbar-track{flex:1;height:18px;background:var(--parch-2);border-radius:6px;overflow:hidden}
+  .hbar-fill{height:100%;border-radius:6px;transition:width .5s}
+  .hbar-val{font-size:12px;font-weight:700;color:var(--text);width:64px;flex:0 0 64px}
+  `;
+  const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
+})();
+
+/* helper de primeiro nome */
+function _primNome(n){return String(n||'').trim().split(/\s+/)[0]||'';}
+
+/* ============================================================
+   9.1 — ANDAMENTOS PROCESSUAIS (movimentações)
+   ============================================================ */
+const TIPOS_ANDAMENTO=['Petição','Despacho','Decisão','Sentença','Audiência','Intimação','Publicação','Juntada','Recurso','Diligência','Outro'];
+
+async function renderAndamentos(processoId){
+  const box=$('#andamentosBox'); if(!box) return;
+  const list=(await dbAll('andamentos')).filter(a=>a.processoId===processoId)
+    .sort((a,b)=>(b.data||'').localeCompare(a.data||'')||(b.createdAt||'').localeCompare(a.createdAt||''));
+  if(!list.length){ box.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:6px 0">Nenhuma movimentação registrada.</div>'; return; }
+  box.innerHTML='<div class="mov-tl">'+list.map(a=>`
+    <div class="mov-item${a.requerAcao?' acao':''}">
+      <div class="mov-dot"></div>
+      <div class="mov-head">
+        <span class="mov-tipo">${esc(a.tipo||'Andamento')}</span>
+        <span class="mov-date">${fmtDate(a.data)}</span>
+        ${a.requerAcao?'<span class="badge bg-red" style="padding:2px 8px;font-size:10.5px"><span class="bdot"></span>Requer ação</span>':''}
+        <span class="mov-del" onclick="delAndamento('${a.id}','${processoId}')">excluir</span>
+      </div>
+      ${a.descricao?`<div class="mov-desc">${esc(a.descricao)}</div>`:''}
+    </div>`).join('')+'</div>';
+}
+
+async function delAndamento(id,processoId){
+  await dbDel('andamentos',id); toast('Movimentação excluída'); renderAndamentos(processoId);
+  if(typeof buildNotifications==='function') buildNotifications();
+}
+
+async function andamentoForm(processoId,id){
+  const a=id?await dbGet('andamentos',id):{data:todayISO(),tipo:'Andamento'};
+  openModal(`
+    <div class="modal-head"><div><h2>${id?'Editar':'Registrar'} movimentação</h2><p>Linha do tempo do processo</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frmMov">
+      <div class="field"><label>Data <span class="req">*</span></label><input type="date" name="data" value="${esc(a.data||todayISO())}" required></div>
+      <div class="field"><label>Tipo</label><select name="tipo">${TIPOS_ANDAMENTO.map(t=>`<option ${a.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field col-2"><label>Descrição do andamento <span class="req">*</span></label><textarea name="descricao" rows="4" required>${esc(a.descricao||'')}</textarea></div>
+      <div class="field col-2"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" name="requerAcao" ${a.requerAcao?'checked':''} style="width:auto"> Requer ação / providência do escritório</label></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="saveMov">${svg(ICON.check)} Salvar</button></div>`);
+  $('#saveMov').onclick=async()=>{
+    const fd=new FormData($('#frmMov'));
+    const descricao=(fd.get('descricao')||'').trim();
+    if(!descricao) return toast('Descreva a movimentação','warn');
+    await dbPut('andamentos',{id:id||uid(),processoId,data:fd.get('data')||todayISO(),tipo:fd.get('tipo'),
+      descricao,requerAcao:!!fd.get('requerAcao'),autor:(currentUser&&currentUser.nome)||'',createdAt:a.createdAt||new Date().toISOString()});
+    closeModal(); toast('Movimentação registrada');
+    renderAndamentos(processoId);
+    if(typeof buildNotifications==='function') buildNotifications();
+  };
+}
+
+/* injeta seção de andamentos no detalhe do processo */
+const _origProcDetail = procDetail;
+procDetail = async function(id){
+  await _origProcDetail(id);
+  const body=$('#overlay .modal-body'); if(!body) return;
+  const sec=document.createElement('div');
+  sec.className='detail-section';
+  sec.innerHTML=`<h4 style="display:flex;align-items:center;justify-content:space-between">Movimentações processuais
+      <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="andamentoForm('${id}')">${svg(ICON.plus,1.8,14)} Registrar</button></h4>
+    <div id="andamentosBox" style="margin-top:8px">Carregando…</div>`;
+  body.appendChild(sec);
+  renderAndamentos(id);
+};
+
+/* ============================================================
+   9.2 — CRM / FUNIL DE CAPTAÇÃO (LEADS)
+   ============================================================ */
+const LEAD_ETAPAS=[
+  ['novo','Novo lead','var(--text-3)'],
+  ['contato','Em contato','var(--blue)'],
+  ['reuniao','Reunião','var(--amber)'],
+  ['proposta','Proposta','#7a5cc4'],
+  ['ganho','Cliente fechado','var(--green)'],
+  ['perdido','Perdido','var(--red)'],
+];
+const ORIGENS_LEAD=['Indicação','Site','Google','Instagram','WhatsApp','Telefone','Evento','Outro'];
+let _leadDrag=null;
+
+RENDER.crm = async function(){
+  const leads=await dbAll('leads');
+  const abertos=leads.filter(l=>l.etapa!=='ganho'&&l.etapa!=='perdido');
+  const ganhos=leads.filter(l=>l.etapa==='ganho').length;
+  const fechaveis=leads.filter(l=>l.etapa==='ganho'||l.etapa==='perdido').length;
+  const conv=fechaveis?Math.round(ganhos/fechaveis*100):0;
+  const pipeline=abertos.reduce((s,l)=>s+Number(l.valorEstimado||0),0);
+
+  $('#content').innerHTML=`<div class="view">
+    <div class="kpi-grid">
+      ${kpi('b1','funnel',leads.length,'Leads no total')}
+      ${kpi('b2','clients',abertos.length,'Em negociação')}
+      ${kpi('b3','finance',moneyBR(pipeline),'Valor em pipeline')}
+      ${kpi('b4','seal',conv+'%','Taxa de conversão')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin:4px 0 14px">
+      <button class="btn btn-primary" onclick="leadForm()">${svg(ICON.plus,1.8,16)} Novo lead</button>
+    </div>
+    <div class="funnel">
+      ${LEAD_ETAPAS.map(([k,lbl,col])=>{
+        const items=leads.filter(l=>(l.etapa||'novo')===k);
+        return `<div class="fcol" data-etapa="${k}">
+          <div class="fcol-head"><span class="fdot" style="background:${col}"></span>${lbl}<span class="kcount">${items.length}</span></div>
+          <div class="fcol-body" data-etapa="${k}">
+            ${items.map(l=>`<div class="lcard" draggable="true" data-lead="${l.id}">
+              <h5>${esc(l.nome||'(sem nome)')}</h5>
+              <div class="lmeta">
+                ${l.area?`<span>${esc(l.area)}</span>`:''}
+                ${l.valorEstimado?`<span style="color:var(--green);font-weight:700">${moneyBR(l.valorEstimado)}</span>`:''}
+                ${l.origem?`<span>• ${esc(l.origem)}</span>`:''}
+              </div>
+            </div>`).join('')||'<div style="font-size:12px;color:var(--text-3);text-align:center;padding:14px 0">vazio</div>'}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  $$('.lcard').forEach(c=>{
+    c.onclick=()=>leadDetail(c.dataset.lead);
+    c.ondragstart=e=>{_leadDrag=c.dataset.lead;e.dataTransfer.effectAllowed='move';};
+  });
+  $$('.fcol').forEach(col=>{
+    col.ondragover=e=>{e.preventDefault();col.classList.add('drag-over');};
+    col.ondragleave=()=>col.classList.remove('drag-over');
+    col.ondrop=async e=>{
+      e.preventDefault();col.classList.remove('drag-over');
+      if(!_leadDrag)return;
+      const l=await dbGet('leads',_leadDrag);
+      if(l&&l.etapa!==col.dataset.etapa){ l.etapa=col.dataset.etapa;l.updatedAt=new Date().toISOString();await dbPut('leads',l);toast('Lead movido para '+(LEAD_ETAPAS.find(x=>x[0]===col.dataset.etapa)[1]));}
+      _leadDrag=null;RENDER.crm();
+    };
+  });
+  $('.view').classList.add('active');
+};
+
+async function leadForm(id){
+  const l=id?await dbGet('leads',id):{etapa:'novo'};
+  openModal(`
+    <div class="modal-head"><div><h2>${id?'Editar':'Novo'} lead</h2><p>Prospecção de cliente</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frmLead">
+      <div class="field col-2"><label>Nome / Empresa <span class="req">*</span></label><input name="nome" value="${esc(l.nome||'')}" required></div>
+      <div class="field"><label>Telefone</label><input name="telefone" value="${esc(l.telefone||'')}" placeholder="(00) 00000-0000"></div>
+      <div class="field"><label>E-mail</label><input name="email" type="email" value="${esc(l.email||'')}"></div>
+      <div class="field"><label>Área de interesse</label><input name="area" value="${esc(l.area||'')}" placeholder="Trabalhista, Cível..."></div>
+      <div class="field"><label>Valor estimado (R$)</label><input name="valorEstimado" type="number" step="0.01" value="${l.valorEstimado||''}"></div>
+      <div class="field"><label>Origem</label><select name="origem">${['',...ORIGENS_LEAD].map(o=>`<option ${l.origem===o?'selected':''}>${o}</option>`).join('')}</select></div>
+      <div class="field"><label>Etapa</label><select name="etapa">${LEAD_ETAPAS.map(([k,lbl])=>`<option value="${k}" ${(l.etapa||'novo')===k?'selected':''}>${lbl}</option>`).join('')}</select></div>
+      <div class="field col-2"><label>Observações</label><textarea name="observacoes">${esc(l.observacoes||'')}</textarea></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="saveLead">${svg(ICON.check)} Salvar</button></div>`);
+  $('#saveLead').onclick=async()=>{
+    const fd=new FormData($('#frmLead'));const nome=(fd.get('nome')||'').trim();
+    if(!nome)return toast('Informe o nome do lead','warn');
+    await dbPut('leads',{id:id||uid(),nome,telefone:fd.get('telefone'),email:fd.get('email'),area:fd.get('area'),
+      valorEstimado:Number(fd.get('valorEstimado')||0),origem:fd.get('origem'),etapa:fd.get('etapa')||'novo',
+      observacoes:fd.get('observacoes'),historico:l.historico||[],createdAt:l.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()});
+    closeModal();toast(id?'Lead atualizado':'Lead cadastrado');RENDER.crm();
+  };
+}
+
+async function leadDetail(id){
+  const l=await dbGet('leads',id);if(!l)return;
+  const etapaLbl=(LEAD_ETAPAS.find(e=>e[0]===(l.etapa||'novo'))||['','—'])[1];
+  const hist=(l.historico||[]).slice().reverse();
+  openModal(`
+    <div class="modal-head"><div><h2>${esc(l.nome)}</h2><p>${etapaLbl}${l.origem?' · origem: '+esc(l.origem):''}</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body">
+      <div class="detail-section"><h4>Dados</h4>
+        <div class="detail-row"><span class="dk">Telefone</span><span class="dv">${esc(l.telefone||'—')}</span></div>
+        <div class="detail-row"><span class="dk">E-mail</span><span class="dv">${esc(l.email||'—')}</span></div>
+        <div class="detail-row"><span class="dk">Área</span><span class="dv">${esc(l.area||'—')}</span></div>
+        <div class="detail-row"><span class="dk">Valor estimado</span><span class="dv" style="color:var(--green)">${l.valorEstimado?moneyBR(l.valorEstimado):'—'}</span></div>
+      </div>
+      ${l.observacoes?`<div class="detail-section"><h4>Observações</h4><div style="font-size:14px;color:var(--text-2);line-height:1.6;white-space:pre-wrap">${esc(l.observacoes)}</div></div>`:''}
+      <div class="detail-section"><h4 style="display:flex;align-items:center;justify-content:space-between">Histórico de contato
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addLeadHist('${id}')">${svg(ICON.plus,1.8,14)} Anotar</button></h4>
+        ${hist.length?hist.map(h=>`<div class="detail-row"><span class="dk">${fmtDate(h.data)}</span><span class="dv">${esc(h.texto)}</span></div>`).join(''):'<div style="color:var(--text-3);font-size:13px;padding:6px 0">Nenhum contato registrado.</div>'}
+      </div>
+    </div>
+    <div class="modal-foot" style="flex-wrap:wrap;gap:8px">
+      <button class="btn btn-ghost" onclick="confirmDelLead('${id}')">${svg(ICON.trash,1.8,15)} Excluir</button>
+      ${l.telefone?`<button class="btn-wpp" onclick="waLead('${id}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.258 2 2 6.258 2 11.5c0 1.965.578 3.79 1.569 5.317L2.046 22l5.299-1.495A9.447 9.447 0 0 0 11.5 21c5.243 0 9.5-4.257 9.5-9.5S16.743 2 11.5 2z"/></svg> WhatsApp</button>`:''}
+      <button class="btn btn-ink" onclick="closeModal();leadForm('${id}')">${svg(ICON.edit)} Editar</button>
+      ${l.etapa!=='ganho'?`<button class="btn btn-primary" onclick="convertLead('${id}')">${svg(ICON.check)} Converter em cliente</button>`:''}
+    </div>`,true);
+}
+
+async function waLead(id){
+  const l=await dbGet('leads',id); if(!l||!l.telefone){ toast('Lead sem telefone','warn'); return; }
+  const msg='Olá '+_primNome(l.nome)+'! Tudo bem? Sou do escritório e gostaria de conversar sobre o seu caso.';
+  if(typeof waOpen==='function') waOpen(l.telefone,msg);
+  else window.open('https://wa.me/'+String(l.telefone).replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+async function addLeadHist(id){
+  const txt=prompt('Anotar contato/atendimento com o lead:');
+  if(!txt||!txt.trim())return;
+  const l=await dbGet('leads',id);if(!l)return;
+  l.historico=l.historico||[];l.historico.push({data:todayISO(),texto:txt.trim()});l.updatedAt=new Date().toISOString();
+  await dbPut('leads',l);toast('Contato registrado');leadDetail(id);
+}
+
+async function confirmDelLead(id){
+  if(!confirm('Excluir este lead definitivamente?'))return;
+  await dbDel('leads',id);closeModal();toast('Lead excluído');RENDER.crm();
+}
+
+async function convertLead(id){
+  const l=await dbGet('leads',id);if(!l)return;
+  const novoId=uid();
+  await dbPut('clientes',{id:novoId,tipo:'PF',nome:l.nome,cpfCnpj:'',rg:'',telefone:l.telefone||'',email:l.email||'',
+    endereco:'',observacoes:(l.observacoes?l.observacoes+'\n\n':'')+'Convertido do CRM (origem: '+(l.origem||'—')+').',
+    dataNascimento:'',origem:l.origem||'CRM',dataCadastro:todayISO()});
+  l.etapa='ganho';l.clienteId=novoId;l.updatedAt=new Date().toISOString();await dbPut('leads',l);
+  closeModal();toast('Lead convertido em cliente!');goto('clientes');
+}
+
+/* ============================================================
+   9.3 — HISTÓRICO DE ATENDIMENTOS (interações por cliente)
+   ============================================================ */
+const TIPOS_INTERACAO=['Ligação','Reunião','E-mail','WhatsApp','Atendimento presencial','Outro'];
+
+async function renderInteracoes(clienteId){
+  const box=$('#interacoesBox'); if(!box) return;
+  const list=(await dbAll('interacoes')).filter(i=>i.clienteId===clienteId)
+    .sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  if(!list.length){ box.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:6px 0">Nenhum atendimento registrado.</div>'; return; }
+  box.innerHTML='<div class="mov-tl">'+list.map(i=>`
+    <div class="mov-item"><div class="mov-dot"></div>
+      <div class="mov-head"><span class="mov-tipo">${esc(i.tipo||'Atendimento')}</span><span class="mov-date">${fmtDate(i.data)}</span>
+        <span class="mov-del" onclick="delInteracao('${i.id}','${clienteId}')">excluir</span></div>
+      ${i.resumo?`<div class="mov-desc">${esc(i.resumo)}</div>`:''}
+    </div>`).join('')+'</div>';
+}
+async function delInteracao(id,clienteId){ await dbDel('interacoes',id);toast('Registro excluído');renderInteracoes(clienteId); }
+
+async function interacaoForm(clienteId){
+  openModal(`
+    <div class="modal-head"><div><h2>Registrar atendimento</h2><p>Histórico de relacionamento</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frmInt">
+      <div class="field"><label>Data</label><input type="date" name="data" value="${todayISO()}"></div>
+      <div class="field"><label>Tipo</label><select name="tipo">${TIPOS_INTERACAO.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="field col-2"><label>Resumo do atendimento <span class="req">*</span></label><textarea name="resumo" rows="4" required></textarea></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="saveInt">${svg(ICON.check)} Salvar</button></div>`);
+  $('#saveInt').onclick=async()=>{
+    const fd=new FormData($('#frmInt'));const resumo=(fd.get('resumo')||'').trim();
+    if(!resumo)return toast('Descreva o atendimento','warn');
+    await dbPut('interacoes',{id:uid(),clienteId,data:fd.get('data')||todayISO(),tipo:fd.get('tipo'),resumo,
+      autor:(currentUser&&currentUser.nome)||'',createdAt:new Date().toISOString()});
+    closeModal();toast('Atendimento registrado');renderInteracoes(clienteId);
+  };
+}
+
+/* injeta aniversário + histórico no detalhe do cliente */
+const _origCliDetail = cliDetail;
+cliDetail = async function(id){
+  await _origCliDetail(id);
+  const body=$('#overlay .modal-body'); if(!body) return;
+  const c=await dbGet('clientes',id);
+  if(c&&c.dataNascimento){
+    const dn=fmtDate(c.dataNascimento);
+    const sec=document.createElement('div');sec.className='detail-section';
+    sec.innerHTML=`<h4>Relacionamento</h4>
+      <div class="detail-row"><span class="dk">Nascimento / Fundação</span><span class="dv">${dn}${birthdayBadge(c.dataNascimento)}</span></div>
+      ${c.origem?`<div class="detail-row"><span class="dk">Origem</span><span class="dv">${esc(c.origem)}</span></div>`:''}`;
+    body.appendChild(sec);
+  }
+  const sec2=document.createElement('div');sec2.className='detail-section';
+  sec2.innerHTML=`<h4 style="display:flex;align-items:center;justify-content:space-between">Histórico de atendimentos
+      <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="interacaoForm('${id}')">${svg(ICON.plus,1.8,14)} Registrar</button></h4>
+    <div id="interacoesBox" style="margin-top:8px">Carregando…</div>`;
+  body.appendChild(sec2);
+  renderInteracoes(id);
+};
+
+function daysToBirthday(iso){
+  if(!iso)return null;
+  const d=new Date(iso+'T00:00:00');if(isNaN(d))return null;
+  const t=new Date();t.setHours(0,0,0,0);
+  let next=new Date(t.getFullYear(),d.getMonth(),d.getDate());
+  if(next<t)next=new Date(t.getFullYear()+1,d.getMonth(),d.getDate());
+  return Math.round((next-t)/86400000);
+}
+function birthdayBadge(iso){
+  const d=daysToBirthday(iso);if(d===null)return '';
+  if(d===0)return ' <span class="badge bg-amber" style="padding:2px 8px;font-size:10.5px"><span class="bdot"></span>Hoje! 🎂</span>';
+  if(d<=7)return ` <span class="badge bg-blue" style="padding:2px 8px;font-size:10.5px"><span class="bdot"></span>em ${d}d</span>`;
+  return '';
+}
+
+/* ============================================================
+   9.4 — INDICADORES & BI
+   ============================================================ */
+function hbar(lbl,val,max,color,fmt){
+  const pct=max>0?Math.max(val/max*100,val>0?3:0):0;
+  return `<div class="hbar-row"><div class="hbar-lbl" title="${esc(lbl)}">${esc(lbl)}</div>
+    <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:${color}"></div></div>
+    <div class="hbar-val">${fmt?fmt(val):val}</div></div>`;
+}
+
+RENDER.indicadores = async function(){
+  const [cli,proc,prazos,fin,acomp,leads,hon,tar]=await Promise.all(
+    ['clientes','processos','prazos','financeiro','contratosAcomp','leads','honorarios','tarefas'].map(dbAll));
+  const cfgMetas=(await dbGet('config','metas'))||{};
+  const metaReceita=Number(cfgMetas.receitaMensal||0);
+
+  const mes=todayISO().slice(0,7);
+  const procAtivos=proc.filter(p=>p.status!=='Encerrado'&&p.status!=='Arquivado').length;
+  const recMes=fin.filter(f=>f.tipo==='receita'&&f.status==='pago'&&(f.data||'').slice(0,7)===mes).reduce((s,f)=>s+Number(f.valor||0),0);
+  const mrr=acomp.filter(c=>c.status==='ativo').reduce((s,c)=>s+Number(c.valorMensal||0),0);
+
+  const prazosTot=prazos.length;
+  const cumpridos=prazos.filter(p=>p.status==='cumprido').length;
+  const taxaPrazo=prazosTot?Math.round(cumpridos/prazosTot*100):0;
+
+  const ganhos=leads.filter(l=>l.etapa==='ganho').length;
+  const fechaveis=leads.filter(l=>l.etapa==='ganho'||l.etapa==='perdido').length;
+  const convLead=fechaveis?Math.round(ganhos/fechaveis*100):0;
+
+  // processos por status
+  const byStatus={};proc.forEach(p=>{const s=p.status||'—';byStatus[s]=(byStatus[s]||0)+1;});
+  const statusRows=Object.entries(byStatus).sort((a,b)=>b[1]-a[1]);
+  const maxStatus=Math.max(1,...statusRows.map(r=>r[1]));
+  const statusCol={'Em andamento':'var(--blue)','Aguardando audiência':'var(--amber)','Sentenciado':'var(--green)','Em recurso':'var(--amber)','Suspenso':'var(--text-3)','Encerrado':'var(--text-3)','Arquivado':'var(--text-3)'};
+
+  // processos por área
+  const byArea={};proc.forEach(p=>{const a=p.area||'Sem área';byArea[a]=(byArea[a]||0)+1;});
+  const areaRows=Object.entries(byArea).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxArea=Math.max(1,...areaRows.map(r=>r[1]));
+
+  // funil de captação
+  const funilRows=LEAD_ETAPAS.map(([k,lbl,col])=>[lbl,leads.filter(l=>(l.etapa||'novo')===k).length,col]);
+  const maxFunil=Math.max(1,...funilRows.map(r=>r[1]));
+
+  // top clientes por receita
+  const recByCli={};fin.filter(f=>f.tipo==='receita').forEach(f=>{if(f.clienteId)recByCli[f.clienteId]=(recByCli[f.clienteId]||0)+Number(f.valor||0);});
+  const topCli=Object.entries(recByCli).map(([cid,v])=>[cliName(cli,cid),v]).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const maxTopCli=Math.max(1,...topCli.map(r=>r[1]));
+
+  const metaPct=metaReceita>0?Math.min(Math.round(recMes/metaReceita*100),100):0;
+
+  $('#content').innerHTML=`<div class="view">
+    <div class="kpi-grid">
+      ${kpi('b1','clients',cli.length,'Clientes ativos')}
+      ${kpi('b2','cases',procAtivos,'Processos em andamento')}
+      ${kpi('b3','finance',moneyBR(recMes),'Receita recebida no mês')}
+      ${kpi('b4','deadline',taxaPrazo+'%','Prazos cumpridos')}
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h3>Meta de faturamento mensal</h3>
+        <span class="link" style="cursor:pointer" onclick="metaForm()">Definir meta →</span></div>
+      <div class="panel-body" style="padding:20px">
+        ${metaReceita>0?`
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+            <div><div style="font-size:12px;color:var(--text-2)">Recebido em ${fmtDate(mes+'-01').slice(3)}</div>
+              <b style="font-family:var(--serif);font-size:26px">${moneyBR(recMes)}</b></div>
+            <div style="text-align:right"><div style="font-size:12px;color:var(--text-2)">Meta</div>
+              <b style="font-size:16px;color:var(--text-2)">${moneyBR(metaReceita)}</b></div>
+          </div>
+          <div class="hbar-track" style="height:24px"><div class="hbar-fill" style="width:${metaPct}%;background:linear-gradient(90deg,var(--brass),var(--green))"></div></div>
+          <div style="text-align:right;margin-top:6px;font-size:13px;font-weight:700;color:${metaPct>=100?'var(--green)':'var(--text-2)'}">${metaPct}% da meta${recMes>=metaReceita?' — atingida! 🎉':''}</div>
+        `:`<div style="color:var(--text-3);font-size:14px;text-align:center;padding:10px">Nenhuma meta definida. <span class="link" style="cursor:pointer" onclick="metaForm()">Clique para definir</span> e acompanhe seu faturamento.</div>`}
+        <div style="margin-top:16px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:14px">
+          <div><div style="font-size:12px;color:var(--text-2)">Receita recorrente</div><b style="font-family:var(--serif);font-size:18px;color:var(--green)">${moneyBR(mrr)}/mês</b></div>
+          <div><div style="font-size:12px;color:var(--text-2)">Conversão de leads</div><b style="font-family:var(--serif);font-size:18px">${convLead}%</b></div>
+          <div><div style="font-size:12px;color:var(--text-2)">Tarefas pendentes</div><b style="font-family:var(--serif);font-size:18px">${tar.filter(t=>t.status!=='concluido').length}</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ind-grid">
+      <div class="panel"><div class="panel-head"><h3>Processos por status</h3></div>
+        <div class="panel-body" style="padding:20px">${statusRows.length?statusRows.map(([s,v])=>hbar(s,v,maxStatus,statusCol[s]||'var(--blue)')).join(''):emptyMini('Sem processos cadastrados')}</div></div>
+      <div class="panel"><div class="panel-head"><h3>Processos por área do Direito</h3></div>
+        <div class="panel-body" style="padding:20px">${areaRows.length?areaRows.map(([a,v])=>hbar(a,v,maxArea,'var(--brass)')).join(''):emptyMini('Sem processos cadastrados')}</div></div>
+    </div>
+
+    <div class="ind-grid" style="margin-top:18px">
+      <div class="panel"><div class="panel-head"><h3>Funil de captação</h3><span class="link" style="cursor:pointer" onclick="goto('crm')">Ver CRM →</span></div>
+        <div class="panel-body" style="padding:20px">${funilRows.some(r=>r[1])?funilRows.map(([l,v,c])=>hbar(l,v,maxFunil,c)).join(''):emptyMini('Nenhum lead cadastrado')}</div></div>
+      <div class="panel"><div class="panel-head"><h3>Receita × Despesa (12 meses)</h3></div>
+        <div class="panel-body" style="padding:20px" id="finChartInd">Carregando…</div></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px"><div class="panel-head"><h3>Top clientes por receita</h3></div>
+      <div class="panel-body" style="padding:20px">${topCli.length?topCli.map(([n,v])=>hbar(n,v,maxTopCli,'var(--green)',moneyBR)).join(''):emptyMini('Nenhuma receita vinculada a clientes')}</div></div>
+  </div>`;
+  if(typeof renderFinancialChart==='function'){ try{ await renderFinancialChart('finChartInd'); }catch(_){ $('#finChartInd').innerHTML=emptyMini('Sem dados financeiros'); } }
+  $('.view').classList.add('active');
+};
+
+async function metaForm(){
+  const m=(await dbGet('config','metas'))||{};
+  openModal(`
+    <div class="modal-head"><div><h2>Meta de faturamento</h2><p>Defina o objetivo mensal de receita</p></div>
+      <button class="modal-close" onclick="closeModal()">${svg(ICON.x)}</button></div>
+    <div class="modal-body"><form id="frmMeta">
+      <div class="field col-2"><label>Meta de receita mensal (R$)</label><input name="receitaMensal" type="number" step="0.01" value="${m.receitaMensal||''}" placeholder="Ex.: 30000"></div>
+    </form></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="saveMeta">${svg(ICON.check)} Salvar</button></div>`);
+  $('#saveMeta').onclick=async()=>{
+    const fd=new FormData($('#frmMeta'));
+    await dbPut('config',{id:'metas',receitaMensal:Number(fd.get('receitaMensal')||0)});
+    closeModal();toast('Meta atualizada');RENDER.indicadores();
+  };
+}
+
+/* ============================================================
+   9.5 — EXTENSÃO: NOTIFICAÇÕES (aniversários + andamentos)
+   ============================================================ */
+async function buildNotifications(){
+  const [prazos,tar,acomp,cli,andamentos] = await Promise.all(['prazos','tarefas','contratosAcomp','clientes','andamentos'].map(dbAll));
+  const today = todayISO();
+  const items = [];
+
+  prazos.filter(p=>p.status!=='cumprido').forEach(p=>{
+    const d = daysUntil(p.dataPrazo); if(d===null) return;
+    if(d<0) items.push({id:'prazo_'+p.id, type:'danger', icon:ICON.deadline, title:'Prazo vencido', desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+    else if(d<=3) items.push({id:'prazo_'+p.id, type:'warn', icon:ICON.deadline, title:`Prazo em ${d===0?'hoje':d+' dia(s)'}`, desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+    else if(d<=7) items.push({id:'prazo_'+p.id, type:'info', icon:ICON.deadline, title:`Prazo em ${d} dias`, desc: esc(p.descricao||''), time: fmtDate(p.dataPrazo)});
+  });
+
+  tar.filter(t=>t.status!=='concluido'&&t.dataVencimento&&t.dataVencimento<today).forEach(t=>{
+    items.push({id:'tar_'+t.id, type:'warn', icon:ICON.tasks, title:'Tarefa em atraso', desc: esc(t.titulo||''), time: fmtDate(t.dataVencimento)});
+  });
+
+  acomp.forEach(c=>{(c.parcelas||[]).forEach(p=>{
+    const d=daysUntil(p.vencimento);
+    if(p.status!=='pago'&&d!==null&&d<0){
+      items.push({id:'mens_'+c.id+'_'+p.competencia, type:'danger', icon:ICON.finance, title:'Mensalidade em atraso', desc: esc((c.numero||'Contrato')+' — '+moneyBR(p.valor)), time: fmtDate(p.vencimento)});
+    }
+  });});
+
+  // NOVO: aniversários nos próximos 7 dias
+  cli.forEach(c=>{
+    if(!c.dataNascimento) return;
+    const d=daysToBirthday(c.dataNascimento);
+    if(d!==null&&d<=7){
+      items.push({id:'aniv_'+c.id+'_'+(new Date().getFullYear()), type:'info', icon:ICON.cake,
+        title: d===0?'Aniversário hoje 🎂':`Aniversário em ${d} dia(s)`, desc: esc(c.nome), time: fmtDate(c.dataNascimento)});
+    }
+  });
+
+  // NOVO: andamentos que requerem ação
+  andamentos.filter(a=>a.requerAcao).forEach(a=>{
+    items.push({id:'mov_'+a.id, type:'warn', icon:ICON.activity, title:'Movimentação requer ação', desc: esc((a.tipo?a.tipo+': ':'')+(a.descricao||'')).slice(0,90), time: fmtDate(a.data)});
+  });
+
+  const unread = items.filter(i=>!_notifRead.has(i.id));
+  const badge = $('#notifBadge');
+  if(badge){
+    if(unread.length>0){ badge.textContent=unread.length>9?'9+':unread.length; badge.classList.add('show'); }
+    else badge.classList.remove('show');
+  }
+  const list = $('#notifList'); if(!list) return;
+  if(!items.length){ list.innerHTML=`<div class="notif-empty">Nenhuma notificação pendente</div>`; return; }
+  const colorMap={danger:'var(--red-bg)',warn:'var(--amber-bg)',info:'var(--blue-bg)'};
+  const textMap={danger:'var(--red)',warn:'var(--amber)',info:'var(--blue)'};
+  list.innerHTML = items.map(i=>`
+    <div class="notif-item${_notifRead.has(i.id)?'':' unread'}" onclick="readNotif('${i.id}')">
+      <div class="notif-ico" style="background:${colorMap[i.type]||'var(--parch-2)'};color:${textMap[i.type]||'var(--text-2)'}">${svg(i.icon,1.8,16)}</div>
+      <div class="notif-body"><div class="notif-title">${i.title}</div><div class="notif-desc">${i.desc}</div><div class="notif-time">${i.time}</div></div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   9.6 — EXTENSÃO: BUSCA GLOBAL (inclui leads)
+   ============================================================ */
+async function runGlobalSearch(q){
+  const panel = $('#searchPanel'); const results = $('#searchResults');
+  if(!q||q.length<2){ panel.classList.remove('show'); return; }
+  panel.classList.add('show');
+  results.innerHTML = `<div class="search-empty">Buscando...</div>`;
+  const [cli, proc, prazos, fin, leads] = await Promise.all(['clientes','processos','prazos','financeiro','leads'].map(dbAll));
+  const ql = q.toLowerCase(); const hits = [];
+  cli.filter(c=>(c.nome||'').toLowerCase().includes(ql)||(c.cpfCnpj||'').includes(ql)).slice(0,4).forEach(c=>{
+    hits.push({section:'Clientes',icon:ICON.clients,color:'var(--blue-bg)',textColor:'var(--blue)',title:c.nome,meta:(c.cpfCnpj?maskCpfCnpj(c.cpfCnpj)+' · ':'')+(c.tipo||''),nav:'clientes'});});
+  proc.filter(p=>(p.numero||'').toLowerCase().includes(ql)||(p.tipoAcao||'').toLowerCase().includes(ql)).slice(0,4).forEach(p=>{
+    hits.push({section:'Processos',icon:ICON.cases,color:'var(--amber-bg)',textColor:'var(--amber)',title:p.tipoAcao||p.numero||'Processo',meta:(p.numero?p.numero+' · ':'')+( p.area||''),nav:'processos'});});
+  leads.filter(l=>(l.nome||'').toLowerCase().includes(ql)).slice(0,3).forEach(l=>{
+    hits.push({section:'Captação (CRM)',icon:ICON.funnel,color:'var(--parch-2)',textColor:'var(--brass-deep)',title:l.nome,meta:(l.area?l.area+' · ':'')+((LEAD_ETAPAS.find(e=>e[0]===(l.etapa||'novo'))||['','—'])[1]),nav:'crm'});});
+  prazos.filter(p=>(p.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(p=>{
+    hits.push({section:'Prazos',icon:ICON.deadline,color:'var(--red-bg)',textColor:'var(--red)',title:p.descricao,meta:'Vence: '+fmtDate(p.dataPrazo),nav:'prazos'});});
+  fin.filter(f=>(f.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(f=>{
+    hits.push({section:'Financeiro',icon:ICON.finance,color:'var(--green-bg)',textColor:'var(--green)',title:f.descricao,meta:moneyBR(f.valor)+' · '+fmtDate(f.data),nav:'financeiro'});});
+  if(!hits.length){ results.innerHTML=`<div class="search-empty">Nenhum resultado para "<b>${esc(q)}</b>"</div>`; return; }
+  let html=''; let lastSec='';
+  hits.forEach(h=>{
+    if(h.section!==lastSec){ html+=`<div class="search-section-lbl">${h.section}</div>`; lastSec=h.section; }
+    html+=`<div class="search-hit" onclick="goto('${h.nav}');closeSearch()">
+      <div class="search-hit-ico" style="background:${h.color};color:${h.textColor}">${svg(h.icon,1.8,15)}</div>
+      <div class="search-hit-body"><div class="search-hit-title">${esc(h.title)}</div><div class="search-hit-meta">${esc(h.meta)}</div></div>
+    </div>`;
+  });
+  results.innerHTML=html;
+}
+
+/* ============================================================
+   9.7 — EXTENSÃO: PAINEL com movimentações recentes e aniversários
+   ============================================================ */
+const _rdLast = RENDER.dashboard;
+RENDER.dashboard = async function(){
+  await _rdLast();
+  try{ await injectDashExtras(); }catch(_){}
+};
+async function injectDashExtras(){
+  const view=$('#content .view'); if(!view) return;
+  const [andamentos,proc,cli]=await Promise.all([dbAll('andamentos'),dbAll('processos'),dbAll('clientes')]);
+  const recentes=andamentos.slice().sort((a,b)=>(b.data||'').localeCompare(a.data||'')||(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,5);
+  const aniv=cli.filter(c=>c.dataNascimento).map(c=>({nome:c.nome,id:c.id,d:daysToBirthday(c.dataNascimento),data:c.dataNascimento}))
+    .filter(c=>c.d!==null&&c.d<=30).sort((a,b)=>a.d-b.d).slice(0,5);
+
+  const wrap=document.createElement('div');wrap.className='dash-grid';wrap.style.marginTop='18px';
+  wrap.innerHTML=`
+    <div class="panel">
+      <div class="panel-head"><h3>Movimentações recentes</h3><span class="link" data-nav="processos" style="cursor:pointer">Processos →</span></div>
+      <div class="panel-body">
+        ${recentes.length?recentes.map(a=>`<div class="tl-item">
+          <div class="tl-bar" style="background:${a.requerAcao?'var(--red)':'var(--brass)'}"></div>
+          <div class="tl-body"><div class="tl-title">${esc(a.tipo||'Andamento')}: ${esc((a.descricao||'').slice(0,70))}</div>
+            <div class="tl-meta"><span>${fmtDate(a.data)}</span><span>• ${esc(procLabel(proc,a.processoId))}</span></div></div>
+        </div>`).join(''):emptyMini('Nenhuma movimentação registrada')}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Aniversários próximos</h3><span class="link" data-nav="clientes" style="cursor:pointer">Clientes →</span></div>
+      <div class="panel-body">
+        ${aniv.length?aniv.map(a=>`<div class="tl-item">
+          <div class="tl-bar" style="background:var(--amber)"></div>
+          <div class="tl-body"><div class="tl-title">${esc(a.nome)}</div>
+            <div class="tl-meta"><span>${fmtDate(a.data)}</span><span>• ${a.d===0?'hoje 🎂':'em '+a.d+' dia(s)'}</span></div></div>
+        </div>`).join(''):emptyMini('Nenhum aniversário nos próximos 30 dias')}
+      </div>
+    </div>`;
+  view.appendChild(wrap);
+  wrap.querySelectorAll('[data-nav]').forEach(e=>e.onclick=()=>goto(e.dataset.nav));
+}
 
 </script>
 </body>
