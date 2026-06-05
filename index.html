@@ -6492,6 +6492,249 @@ async function injectDashExtras(){
   wrap.querySelectorAll('[data-nav]').forEach(e=>e.onclick=()=>goto(e.dataset.nav));
 }
 
+
+/* ============================================================
+   MÓDULO 10 — LICENCIAMENTO POR DISPOSITIVO (código de ativação)
+   Portado do sistema ImobiPro e adaptado à identidade do Lexora.
+   • Tela de "Código de Ativação" na 1ª execução da máquina
+   • Trava de licença: 1 licença = 1 dispositivo (fingerprint)
+   • Verificação remota via JSONBin.io
+   • Parede de "Acesso não autorizado" para dispositivo diferente
+   ------------------------------------------------------------
+   COMO USAR (para o administrador/vendedor do Lexora):
+   1) Crie uma conta gratuita em https://jsonbin.io
+   2) Copie sua Master Key (X-MASTER-KEY) e cole em API_KEY abaixo.
+   3) Para cada cliente, crie um "Bin" com o conteúdo: { "licenses": {} }
+      e entregue o ID do bin como "Código de Ativação".
+   4) Ajuste WHATSAPP com o número para solicitar nova licença.
+   ============================================================ */
+const _LEXLIC_CFG = {
+  PRODUTO   : 'Lexora',
+  API_KEY   : '$2a$10$xxIvXXIjG7A86QLIGEifv.jhyYGb3oxNTy37NWXJwY4/PDwozFjvK',   // X-Master-Key do jsonbin.io
+  WHATSAPP  : '5599999999999',                          // número p/ solicitar licença (só dígitos, com DDI)
+  FAIL_OPEN : true,   // true: se ficar sem internet, libera o uso; false: bloqueia sem conexão
+  STORE_CODE: 'lexora_actcode',
+  STORE_FP  : 'lexora_fp'
+};
+
+/* ---------- estilos da camada de licença ---------- */
+(function(){
+  const css = `
+  #lxLicLoading{position:fixed;inset:0;z-index:100000;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff}
+  #lxLicLoading._hide{display:none}
+  #lxLicLoading ._spin{width:42px;height:42px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--brass);border-radius:50%;animation:lxspin .8s linear infinite}
+  #lxLicLoading p{color:rgba(255,255,255,.6);font-size:14px;margin:0}
+  @keyframes lxspin{to{transform:rotate(360deg)}}
+
+  #lxActModal,#lxLicWall{position:fixed;inset:0;z-index:100001;background:linear-gradient(150deg,#1a1c24,#0f1116);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:#fff;overflow-y:auto}
+  #lxActModal._show,#lxLicWall._show{display:flex}
+  #lxActModal .act-logo,#lxLicWall .ico{width:64px;height:64px;border-radius:18px;background:linear-gradient(150deg,var(--brass),var(--brass-deep));display:grid;place-items:center;margin-bottom:16px;box-shadow:0 10px 30px rgba(176,131,50,.4)}
+  #lxActModal .act-logo svg,#lxLicWall .ico svg{width:34px;height:34px}
+  #lxActModal h2,#lxLicWall h1{font-family:var(--serif);font-size:24px;font-weight:600;margin:0 0 8px;color:#fff;letter-spacing:.3px}
+  #lxActModal .act-sub,#lxLicWall p{color:rgba(255,255,255,.6);font-size:14px;max-width:380px;line-height:1.6;margin:0 0 24px}
+  #lxActModal strong,#lxLicWall strong{color:var(--brass-soft)}
+  .lx-act-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px;width:100%;max-width:380px;text-align:left}
+  .lx-act-label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .lx-act-input-wrap{position:relative;margin-bottom:10px}
+  .lx-act-input{width:100%;padding:13px 44px 13px 14px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.05);color:#fff;font-size:14px;outline:none;font-family:inherit;transition:border .15s,background .15s;box-sizing:border-box}
+  .lx-act-input:focus{border-color:var(--brass);background:rgba(176,131,50,.1)}
+  .lx-act-input::placeholder{color:rgba(255,255,255,.3)}
+  .lx-act-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:none;color:rgba(255,255,255,.5);cursor:pointer;display:grid;place-items:center;border-radius:8px}
+  .lx-act-eye:hover{background:rgba(255,255,255,.08);color:#fff}
+  .lx-act-eye svg{width:18px;height:18px}
+  .lx-act-err{display:none;background:rgba(178,58,58,.18);color:#f0a6a6;border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:600;margin-bottom:10px}
+  .lx-act-err._show{display:block}
+  .lx-act-btn{width:100%;padding:13px;background:linear-gradient(150deg,var(--brass),var(--brass-deep));color:#fff;border:none;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,opacity .15s;box-shadow:0 6px 20px rgba(176,131,50,.35)}
+  .lx-act-btn:hover{opacity:.93;transform:translateY(-1px)}
+  .lx-act-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .lx-act-btn svg{width:17px;height:17px}
+  .lx-act-spin{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:lxspin .8s linear infinite}
+  #lxActModal .act-footer{margin-top:22px;color:rgba(255,255,255,.3);font-size:11.5px;letter-spacing:1px}
+  #lxLicWall .lx-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;margin-bottom:22px;max-width:380px;width:100%}
+  #lxLicWall .lx-card small{display:block;color:rgba(255,255,255,.45);font-size:10.5px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  #lxLicWall .lx-card span{color:var(--brass-soft);font-size:13px;font-weight:600;word-break:break-all}
+  #lxLicWall .lx-sep{margin:18px 0;color:rgba(255,255,255,.35);font-size:13px}
+  #lxLicWall .lx-wabtn{display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:11px;font-weight:700;font-size:14px;transition:transform .12s,box-shadow .15s;box-shadow:0 6px 20px rgba(37,211,102,.35)}
+  #lxLicWall .lx-wabtn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(37,211,102,.45)}
+  #lxLicWall .lx-wabtn svg{width:20px;height:20px}
+  #lxLicWall .footer{margin-top:24px;color:rgba(255,255,255,.3);font-size:12px}
+  `;
+  const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
+
+  const scaleIcon='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-2 5h4l-2-5zM19 7l-2 5h4l-2-5zM7 12a2 2 0 1 1-4 0M21 12a2 2 0 1 1-4 0M5 7l7-2 7 2M8 21h8"/></svg>';
+  const lockIcon='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+  const unlockSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+  const eyeSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const waSvg='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM11.5 2C6.258 2 2 6.258 2 11.5c0 1.965.578 3.79 1.569 5.317L2.046 22l5.299-1.495A9.447 9.447 0 0 0 11.5 21c5.243 0 9.5-4.257 9.5-9.5S16.743 2 11.5 2z"/></svg>';
+
+  const overlays=document.createElement('div');
+  overlays.innerHTML=`
+  <div id="lxLicLoading" class="_hide"><div class="_spin"></div><p>Verificando licença…</p></div>
+
+  <div id="lxActModal">
+    <div class="act-logo">${scaleIcon}</div>
+    <h2>${_LEXLIC_CFG.PRODUTO}</h2>
+    <p class="act-sub">Para ativar este dispositivo, insira o <strong>Código de Ativação</strong> fornecido pelo administrador do sistema.</p>
+    <div class="lx-act-box">
+      <label class="lx-act-label" for="lxActInput">Código de Ativação</label>
+      <div class="lx-act-input-wrap">
+        <input id="lxActInput" class="lx-act-input" type="password" placeholder="Digite o código…" autocomplete="off">
+        <button class="lx-act-eye" type="button" id="lxActEye" title="Mostrar/ocultar">${eyeSvg}</button>
+      </div>
+      <div class="lx-act-err" id="lxActErr"></div>
+      <button class="lx-act-btn" id="lxActBtn">
+        <span class="lx-act-spin" id="lxActSpin"></span>
+        <span id="lxActBtnTxt">${unlockSvg} Ativar dispositivo</span>
+      </button>
+    </div>
+    <div class="act-footer">${_LEXLIC_CFG.PRODUTO} · Gestão Jurídica</div>
+  </div>
+
+  <div id="lxLicWall">
+    <div class="ico">${lockIcon}</div>
+    <h1>Acesso não autorizado</h1>
+    <p>Esta licença do <strong>${_LEXLIC_CFG.PRODUTO}</strong> já está vinculada a outro dispositivo. Cada licença permite uso em apenas <strong>uma máquina</strong>.</p>
+    <div class="lx-card"><small>Dispositivo registrado</small><span id="lxLicDev">—</span></div>
+    <div class="lx-act-box">
+      <label class="lx-act-label" for="lxLicInput">Inserir nova licença</label>
+      <div class="lx-act-input-wrap">
+        <input id="lxLicInput" class="lx-act-input" type="password" placeholder="Digite o código…" autocomplete="off">
+        <button class="lx-act-eye" type="button" id="lxLicEye" title="Mostrar/ocultar">${eyeSvg}</button>
+      </div>
+      <div class="lx-act-err" id="lxLicErr"></div>
+      <button class="lx-act-btn" id="lxLicBtn">
+        <span class="lx-act-spin" id="lxLicSpin"></span>
+        <span id="lxLicBtnTxt">${unlockSvg} Ativar neste dispositivo</span>
+      </button>
+    </div>
+    <div class="lx-sep">— ou —</div>
+    <a class="lx-wabtn" id="lxLicWa" href="#" target="_blank">${waSvg} Solicitar nova licença</a>
+    <div class="footer">${_LEXLIC_CFG.PRODUTO} · Sistema de Gestão Jurídica</div>
+  </div>`;
+  document.body.appendChild(overlays);
+})();
+
+/* ---------- Módulo de Ativação ---------- */
+var _LexActivation = (function(){
+  'use strict';
+  const KEY=_LEXLIC_CFG.STORE_CODE;
+
+  function parseCode(raw){ const binId=(raw||'').trim(); if(!binId) return null; return {binId, apiKey:_LEXLIC_CFG.API_KEY}; }
+  function getSaved(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function save(obj){ try{ localStorage.setItem(KEY, JSON.stringify(obj)); }catch(e){} }
+  function show(){ const m=document.getElementById('lxActModal'); if(m) m.classList.add('_show'); setTimeout(()=>{ const i=document.getElementById('lxActInput'); if(i) i.focus(); },250); }
+  function hide(){ const m=document.getElementById('lxActModal'); if(m) m.classList.remove('_show'); }
+  function setLoading(on){ const b=document.getElementById('lxActBtn'),s=document.getElementById('lxActSpin'),t=document.getElementById('lxActBtnTxt'); if(b)b.disabled=on; if(s)s.style.display=on?'block':'none'; if(t)t.style.display=on?'none':'inline-flex'; }
+  function setErr(msg){ const e=document.getElementById('lxActErr'); if(!e)return; e.textContent=msg||''; e.classList.toggle('_show',!!msg); }
+  function toggleEye(){ const i=document.getElementById('lxActInput'); if(i) i.type = i.type==='password'?'text':'password'; }
+
+  function confirmar(){
+    const parsed=parseCode(document.getElementById('lxActInput').value);
+    if(!parsed){ setErr('Código inválido. Verifique e tente novamente.'); return; }
+    if(!parsed.apiKey || parsed.apiKey.indexOf('COLE_AQUI')===0){ setErr('Sistema não configurado: defina a API_KEY no código.'); return; }
+    setLoading(true); setErr('');
+    fetch('https://api.jsonbin.io/v3/b/'+parsed.binId+'/latest',{headers:{'X-Master-Key':parsed.apiKey,'X-Bin-Meta':false}})
+      .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(()=>{ save(parsed); hide(); setLoading(false); _LexLicense.run(parsed); })
+      .catch(()=>{ setLoading(false); setErr('Código inválido ou sem conexão. Verifique e tente novamente.'); });
+  }
+
+  function init(){
+    const saved=getSaved();
+    if(saved && saved.binId && saved.apiKey){ _LexLicense.run(saved); }
+    else { show(); }
+  }
+
+  return { init, confirmar, toggleEye, parseCode, save };
+})();
+
+/* ---------- Módulo de Verificação de Licença (fingerprint) ---------- */
+var _LexLicense = (function(){
+  'use strict';
+
+  function fp(){
+    const raw=[navigator.userAgent,navigator.language||'',screen.width+'x'+screen.height,screen.colorDepth||'',new Date().getTimezoneOffset(),navigator.hardwareConcurrency||'',navigator.platform||''].join('|');
+    let h=5381; for(let i=0;i<raw.length;i++){ h=((h<<5)+h)+raw.charCodeAt(i); h=h&h; }
+    return 'FP_'+Math.abs(h).toString(36).toUpperCase();
+  }
+  function deviceLabel(){
+    const ua=navigator.userAgent; let os='Desconhecido';
+    if(/Windows NT 10/.test(ua))os='Windows 10/11'; else if(/Windows/.test(ua))os='Windows';
+    else if(/Mac OS X/.test(ua))os='Mac'; else if(/Android/.test(ua))os='Android';
+    else if(/iPhone/.test(ua))os='iPhone'; else if(/iPad/.test(ua))os='iPad'; else if(/Linux/.test(ua))os='Linux';
+    let br='Navegador';
+    if(/Chrome\//.test(ua)&&!/Edg\//.test(ua))br='Chrome'; else if(/Firefox\//.test(ua))br='Firefox';
+    else if(/Edg\//.test(ua))br='Edge'; else if(/Safari\//.test(ua)&&!/Chrome/.test(ua))br='Safari';
+    return os+' · '+br+' · '+new Date().toLocaleDateString('pt-BR');
+  }
+  function showLoad(){ const l=document.getElementById('lxLicLoading'); if(l) l.classList.remove('_hide'); }
+  function allow(){ const l=document.getElementById('lxLicLoading'); if(l) l.classList.add('_hide'); }
+  function block(label){
+    allow();
+    const dev=document.getElementById('lxLicDev'); if(dev) dev.textContent=label||'Outro dispositivo';
+    const wa=document.getElementById('lxLicWa'); if(wa) wa.href='https://wa.me/'+_LEXLIC_CFG.WHATSAPP+'?text='+encodeURIComponent('Olá! Gostaria de adquirir uma nova licença do '+_LEXLIC_CFG.PRODUTO+' para outro dispositivo.');
+    const w=document.getElementById('lxLicWall'); if(w) w.classList.add('_show');
+  }
+
+  function fetchBin(c,cb){ fetch('https://api.jsonbin.io/v3/b/'+c.binId+'/latest',{headers:{'X-Master-Key':c.apiKey,'X-Bin-Meta':false}}).then(r=>r.json()).then(d=>cb(null,d.record||d)).catch(e=>cb(e,null)); }
+  function saveBin(c,rec,cb){ fetch('https://api.jsonbin.io/v3/b/'+c.binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':c.apiKey},body:JSON.stringify(rec)}).then(r=>r.json()).then(d=>cb(null,d)).catch(e=>cb(e,null)); }
+
+  function setLockLoading(on){ const b=document.getElementById('lxLicBtn'),s=document.getElementById('lxLicSpin'),t=document.getElementById('lxLicBtnTxt'); if(b)b.disabled=on; if(s)s.style.display=on?'block':'none'; if(t)t.style.display=on?'none':'inline-flex'; }
+  function setLockErr(msg){ const e=document.getElementById('lxLicErr'); if(!e)return; e.textContent=msg||''; e.classList.toggle('_show',!!msg); }
+  function toggleEyeLock(){ const i=document.getElementById('lxLicInput'); if(i) i.type = i.type==='password'?'text':'password'; }
+
+  function confirmarNovaLicenca(){
+    const parsed=_LexActivation.parseCode(document.getElementById('lxLicInput').value);
+    if(!parsed){ setLockErr('Código inválido. Verifique e tente novamente.'); return; }
+    setLockLoading(true); setLockErr('');
+    fetch('https://api.jsonbin.io/v3/b/'+parsed.binId+'/latest',{headers:{'X-Master-Key':parsed.apiKey,'X-Bin-Meta':false}})
+      .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(()=>{ setLockLoading(false); _LexActivation.save(parsed); try{ localStorage.removeItem(_LEXLIC_CFG.STORE_FP); }catch(e){} location.reload(); })
+      .catch(()=>{ setLockLoading(false); setLockErr('Código inválido ou sem conexão.'); });
+  }
+
+  function run(creds){
+    const licKey=(location.hostname||'local').replace(/\./g,'_');
+    const myFp=fp(), myLabel=deviceLabel();
+    try{ const cached=localStorage.getItem(_LEXLIC_CFG.STORE_FP); if(cached && cached===myFp){ allow(); return; } }catch(e){}
+    showLoad();
+    fetchBin(creds,(err,record)=>{
+      if(err||!record){ if(_LEXLIC_CFG.FAIL_OPEN){ allow(); } else { block('Sem conexão para validar a licença'); } return; }
+      const licenses=record.licenses||{};
+      if(!licenses[licKey]){
+        licenses[licKey]={fingerprint:myFp,label:myLabel,registeredAt:new Date().toISOString()};
+        record.licenses=licenses;
+        saveBin(creds,record,()=>{ try{ localStorage.setItem(_LEXLIC_CFG.STORE_FP,myFp); }catch(e){} allow(); });
+      } else {
+        const reg=licenses[licKey];
+        if(reg.fingerprint===myFp){ try{ localStorage.setItem(_LEXLIC_CFG.STORE_FP,myFp); }catch(e){} allow(); }
+        else { let d=''; try{ d=new Date(reg.registeredAt).toLocaleDateString('pt-BR'); }catch(e){} block(reg.label||('Registrado em '+d)); }
+      }
+    });
+  }
+
+  return { run, confirmarNovaLicenca, toggleEyeLock };
+})();
+
+/* ---------- liga os botões e inicializa ---------- */
+(function(){
+  function bind(id,fn){ const el=document.getElementById(id); if(el) el.addEventListener(fn.ev||'click',fn.cb); }
+  const wire=()=>{
+    const map=[
+      ['lxActBtn','click',()=>_LexActivation.confirmar()],
+      ['lxActEye','click',()=>_LexActivation.toggleEye()],
+      ['lxActInput','keydown',e=>{ if(e.key==='Enter') _LexActivation.confirmar(); }],
+      ['lxLicBtn','click',()=>_LexLicense.confirmarNovaLicenca()],
+      ['lxLicEye','click',()=>_LexLicense.toggleEyeLock()],
+      ['lxLicInput','keydown',e=>{ if(e.key==='Enter') _LexLicense.confirmarNovaLicenca(); }],
+    ];
+    map.forEach(([id,ev,cb])=>{ const el=document.getElementById(id); if(el) el.addEventListener(ev,cb); });
+    _LexActivation.init();
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire);
+  else wire();
+})();
+
 </script>
 </body>
 </html>
