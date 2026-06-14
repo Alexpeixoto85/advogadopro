@@ -97,6 +97,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:var(--sans);background:var(--parch);color:var(--text);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+@media(max-width:820px){body{overflow:auto}}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#cfc8b8;border-radius:10px;border:2px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-track{background:transparent}
@@ -353,8 +354,7 @@ tbody tr:last-child td{border-bottom:none}
 
 /* responsive */
 @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.dash-grid{grid-template-columns:1fr}.fin-grid{grid-template-columns:1fr}.kanban{grid-template-columns:1fr}.doc-type-tabs{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:820px){
-  .sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%)}
+@media(max-width:820px){.sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .backdrop-blur.show{display:block;position:fixed;inset:0;background:rgba(22,36,63,.4);z-index:55}
   .hamburger{display:grid}
@@ -366,8 +366,10 @@ tbody tr:last-child td{border-bottom:none}
   .page-head h1{font-size:21px}
   .topbar-date{display:none}
   .doc-type-tabs{grid-template-columns:1fr 1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .fin-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:520px){.kpi-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.kpi-grid{grid-template-columns:1fr}.fin-grid{grid-template-columns:1fr}}
 
 /* ===== Auth screen ===== */
 #authScreen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
@@ -402,6 +404,7 @@ tbody tr:last-child td{border-bottom:none}
 .user-chip .uc-av{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--brass-soft);display:grid;place-items:center;font-family:var(--serif);font-size:12px;font-weight:700;flex-shrink:0}
 .user-chip .uc-name{font-size:13px;font-weight:600;color:var(--ink);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-chip .uc-role{font-size:11px;color:var(--text-2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:820px){.user-chip .uc-name,.user-chip .uc-role{max-width:80px}.user-chip>div:not(.uc-av){display:none}}
 .user-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:190px;z-index:200;overflow:hidden;display:none}
 .user-chip:hover .user-menu,.user-chip.open .user-menu{display:block}
 .user-menu-item{display:flex;align-items:center;gap:10px;padding:11px 15px;font-size:13.5px;font-weight:500;color:var(--text);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left}
@@ -760,11 +763,11 @@ tbody tr:last-child td{border-bottom:none}
         <div class="uc-av" id="userAv">?</div>
         <div><div class="uc-name" id="userName">—</div><div class="uc-role" id="userRole">—</div></div>
         <div class="user-menu">
-          <button class="user-menu-item" onclick="goto('logs');closeMenu()">
+          <button class="user-menu-item" onclick="if(userCanAccess('logs'))goto('logs');else toast('Acesso não permitido','warn');closeMenu()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 10h8M8 14h8M8 18h5"/></svg>
             Logs do sistema
           </button>
-          <button class="user-menu-item" onclick="goto('usuarios');closeMenu()">
+          <button class="user-menu-item" onclick="if(userCanAccess('usuarios'))goto('usuarios');else toast('Acesso não permitido','warn');closeMenu()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Gerenciar usuários
           </button>
@@ -954,9 +957,12 @@ function buildNav(){
 }
 async function goto(id){
   if(!userCanAccess(id)){toast('Acesso não permitido para o seu perfil','warn');return;}
+  if(!RENDER[id]){toast('Módulo indisponível','warn');return;}
   current=id;const p=PAGES.find(x=>x.id===id);
-  $('#pageTitle').textContent=p.title;$('#pageSub').textContent=p.sub;
+  if(p){$('#pageTitle').textContent=p.title;$('#pageSub').textContent=p.sub;}
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  // sync bottom nav
+  document.querySelectorAll('#mNav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
   $('#content').scrollTop=0;
   await RENDER[id]();
   $('#content').querySelector('.view')?.classList.add('active');
@@ -4564,9 +4570,9 @@ function closeMenu() { document.getElementById('userChip').classList.remove('ope
    normalmente; só encerra se parar de interagir com o Lexora.
    ============================================================ */
 (function(){
-  const TIMEOUT_MS   = 60 * 1000;   // 1 minuto de inatividade
-  const WARNING_MS   = 15 * 1000;   // aviso nos últimos 15 s
-  const WARN_AT_MS   = TIMEOUT_MS - WARNING_MS; // 45 s
+  const TIMEOUT_MS   = 30 * 60 * 1000;  // 30 minutos de inatividade
+  const WARNING_MS   = 60 * 1000;        // aviso no último 1 min
+  const WARN_AT_MS   = TIMEOUT_MS - WARNING_MS; // 29 min
 
   let _idleTimer   = null;
   let _warnTimer   = null;
@@ -4592,7 +4598,7 @@ function closeMenu() { document.getElementById('userChip').classList.remove('ope
         </div>
         <h2 style="font-family:'Fraunces',Georgia,serif;font-size:20px;color:#16243f;margin-bottom:10px">Sessão por encerrar</h2>
         <p style="font-size:14px;color:#5d6573;line-height:1.6;margin-bottom:6px">Nenhuma atividade detectada no Lexora.</p>
-        <p style="font-size:14px;color:#5d6573;line-height:1.6;margin-bottom:22px">Você será desconectado em <b id="_sessionCountdown" style="color:#b23a3a;font-size:16px">15</b> segundos.</p>
+        <p style="font-size:14px;color:#5d6573;line-height:1.6;margin-bottom:22px">Você será desconectado em <b id="_sessionCountdown" style="color:#b23a3a;font-size:16px">60</b> segundos.</p>
         <button id="_sessionKeepBtn" style="width:100%;padding:12px;border-radius:11px;background:linear-gradient(150deg,#b08332,#8a6420);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:inherit">
           Continuar sessão
         </button>
@@ -4608,7 +4614,7 @@ function closeMenu() { document.getElementById('userChip').classList.remove('ope
     if (!_active) return;
     buildWarnOverlay();
     let secs = Math.ceil(WARNING_MS / 1000);
-    _warnCount.textContent = secs;
+    if (_warnCount) _warnCount.textContent = secs;
     _warnOverlay.style.display = 'flex';
     clearInterval(_countIntvl);
     _countIntvl = setInterval(() => {
@@ -5057,7 +5063,7 @@ async function toggleUser(id) {
   try { await seedIfEmpty(); } catch(e){ console.warn('seed error:', e); }
   try { await loadBranding(); } catch(e){ console.warn('branding error:', e); }
   try { buildNav(); } catch(e){ console.error('buildNav error:', e); }
-  tickClock(); setInterval(tickClock, 30000);
+  tickClock(); setInterval(tickClock, 60000);
 
   // Bind enter key on login/register forms
   document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
@@ -5165,53 +5171,17 @@ document.addEventListener('click', e=>{
 
 /* ============================================================
    MÓDULO 2 — BUSCA GLOBAL UNIFICADA
+   (implementação estendida no Módulo 9.6 — esta função é substituída)
    ============================================================ */
 let _searchTimer;
-async function runGlobalSearch(q){
-  const panel = $('#searchPanel'); const results = $('#searchResults');
-  if(!q||q.length<2){ panel.classList.remove('show'); return; }
-  panel.classList.add('show');
-  results.innerHTML = `<div class="search-empty">Buscando...</div>`;
-
-  const [cli, proc, prazos, fin] = await Promise.all(['clientes','processos','prazos','financeiro'].map(dbAll));
-  const ql = q.toLowerCase();
-  const hits = [];
-
-  cli.filter(c=>(c.nome||'').toLowerCase().includes(ql)||(c.cpfCnpj||'').includes(ql)).slice(0,4).forEach(c=>{
-    hits.push({section:'Clientes',icon:ICON.clients,color:'var(--blue-bg)',textColor:'var(--blue)',title:c.nome,meta:(c.cpfCnpj?maskCpfCnpj(c.cpfCnpj)+' · ':'')+(c.tipo||''),nav:'clientes'});
-  });
-  proc.filter(p=>(p.numero||'').toLowerCase().includes(ql)||(p.tipoAcao||'').toLowerCase().includes(ql)).slice(0,4).forEach(p=>{
-    hits.push({section:'Processos',icon:ICON.cases,color:'var(--amber-bg)',textColor:'var(--amber)',title:p.tipoAcao||p.numero||'Processo',meta:(p.numero?p.numero+' · ':'')+( p.area||''),nav:'processos'});
-  });
-  prazos.filter(p=>(p.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(p=>{
-    hits.push({section:'Prazos',icon:ICON.deadline,color:'var(--red-bg)',textColor:'var(--red)',title:p.descricao,meta:'Vence: '+fmtDate(p.dataPrazo),nav:'prazos'});
-  });
-  fin.filter(f=>(f.descricao||'').toLowerCase().includes(ql)).slice(0,3).forEach(f=>{
-    hits.push({section:'Financeiro',icon:ICON.finance,color:'var(--green-bg)',textColor:'var(--green)',title:f.descricao,meta:moneyBR(f.valor)+' · '+fmtDate(f.data),nav:'financeiro'});
-  });
-
-  if(!hits.length){ results.innerHTML=`<div class="search-empty">Nenhum resultado para "<b>${esc(q)}</b>"</div>`; return; }
-
-  let html=''; let lastSec='';
-  hits.forEach(h=>{
-    if(h.section!==lastSec){ html+=`<div class="search-section-lbl">${h.section}</div>`; lastSec=h.section; }
-    html+=`<div class="search-hit" onclick="goto('${h.nav}');closeSearch()">
-      <div class="search-hit-ico" style="background:${h.color};color:${h.textColor}">${svg(h.icon,1.8,15)}</div>
-      <div class="search-hit-body">
-        <div class="search-hit-title">${esc(h.title)}</div>
-        <div class="search-hit-meta">${esc(h.meta)}</div>
-      </div>
-    </div>`;
-  });
-  results.innerHTML=html;
-}
+function _runGlobalSearchBase(q){ /* substituída pelo módulo 9.6 */ }
 
 function closeSearch(){ $('#searchPanel')?.classList.remove('show'); if($('#globalSearch'))$('#globalSearch').value=''; }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const inp = $('#globalSearch');
   if(inp){
-    inp.addEventListener('input',e=>{ clearTimeout(_searchTimer); _searchTimer=setTimeout(()=>runGlobalSearch(e.target.value.trim()),250); });
+    inp.addEventListener('input',e=>{ clearTimeout(_searchTimer); _searchTimer=setTimeout(()=>{ if(typeof runGlobalSearch==='function') runGlobalSearch(e.target.value.trim()); },250); });
     inp.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSearch(); });
   }
   document.addEventListener('click',e=>{
@@ -5597,13 +5567,9 @@ async function renderFinancialChart(containerId){
 /* ============================================================
    PATCH — notificações no dashboard
    ============================================================ */
-const _origRenderDash = RENDER.dashboard;
-RENDER.dashboard = async function(){
-  await _origRenderDash();
-  buildNotifications();
-};
+// buildNotifications é chamada via RENDER.dashboard no módulo 9.6
 
-document.addEventListener('lexora:login', ()=>{ buildNotifications(); });
+document.addEventListener('lexora:login', ()=>{ if(typeof buildNotifications==='function') buildNotifications(); });
 
 
 /* ============================================================
