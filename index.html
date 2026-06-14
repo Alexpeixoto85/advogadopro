@@ -2617,6 +2617,11 @@ function gerarDocPDF(conteudo,titulo,cfg,cliente){
   setTimeout(()=>w.print(),700);
 }
 RENDER.config=async function(){
+  if (RENDER.config._running) return; // evita reentrada
+  RENDER.config._running = true;
+  try { await _renderConfigInner(); } finally { RENDER.config._running = false; }
+};
+async function _renderConfigInner(){
   const cfg=(await dbGet('config','escritorio'))||{};
   const counts={};for(const s of ['clientes','processos','prazos','compromissos','financeiro','tarefas','documentos'])counts[s]=(await dbAll(s)).length;
   const logoPreview=cfg.logo?`<div style="margin-top:12px;padding:12px;background:var(--parch-2);border-radius:9px;display:flex;align-items:center;gap:12px">
@@ -2775,7 +2780,7 @@ RENDER.config=async function(){
       await dbPut('config',{...cur,id:'escritorio',logo:ev.target.result,logoOpacity:opacity});
       applyBranding(ev.target.result,null,opacity,null);
       toast('Logo salva! Aparecerá nos PDFs como papel timbrado.');
-      RENDER.config();
+      setTimeout(()=>RENDER.config(),50);
     };
     reader.readAsDataURL(file);
   };
@@ -2791,7 +2796,7 @@ RENDER.config=async function(){
       await dbPut('config',{...cur,id:'escritorio',bgImage:ev.target.result,bgOpacity:opacity});
       applyBranding(null,ev.target.result,null,opacity);
       toast('Plano de fundo aplicado!');
-      RENDER.config();
+      setTimeout(()=>RENDER.config(),50);
     };
     reader.readAsDataURL(file);
   };
@@ -2802,7 +2807,7 @@ RENDER.config=async function(){
     delete cur.logo;delete cur.logoOpacity;
     await dbPut('config',cur);
     applyBranding(null,null,null,null);
-    toast('Logo removida');RENDER.config();
+    toast('Logo removida');setTimeout(()=>RENDER.config(),50);
   };
 
   /* ---- remover bg ---- */
@@ -2812,7 +2817,7 @@ RENDER.config=async function(){
     await dbPut('config',cur);
     applyBranding(null,null,null,cur.bgOpacity);
     document.body.style.backgroundImage='';
-    toast('Plano de fundo removido');RENDER.config();
+    toast('Plano de fundo removido');setTimeout(()=>RENDER.config(),50);
   };
 
   $('#expBtn').onclick=exportData;
@@ -2888,16 +2893,17 @@ function confirmDel(store,id,label,after){
   $('#confDel').onclick=async()=>{await dbDel(store,id);closeModal();toast(label.charAt(0).toUpperCase()+label.slice(1)+' excluído');after();};
 }
 
-/* ---------- global search ---------- */
-$('#globalSearch').oninput=e=>{
-  const v=e.target.value.toLowerCase();if(!v)return;
-};
-$('#globalSearch').onkeydown=async e=>{
-  if(e.key!=='Enter')return;const v=e.target.value.trim().toLowerCase();if(!v)return;
-  const proc=await dbAll('processos');const cli=await dbAll('clientes');
-  if(cli.some(c=>(c.nome||'').toLowerCase().includes(v))){cliFilter=e.target.value;goto('clientes');}
-  else{procFilter=e.target.value;goto('processos');}
-};
+/* ---------- global search (legacy Enter key fallback) ---------- */
+(function(){
+  const gs = $('#globalSearch'); if (!gs) return;
+  gs.onkeydown = async e => {
+    if (e.key !== 'Enter') return;
+    const v = e.target.value.trim().toLowerCase(); if (!v) return;
+    const proc = await dbAll('processos'); const cli = await dbAll('clientes');
+    if (cli.some(c => (c.nome || '').toLowerCase().includes(v))) { cliFilter = e.target.value; goto('clientes'); }
+    else { procFilter = e.target.value; goto('processos'); }
+  };
+})();
 
 /* ---------- clock ---------- */
 function tickClock(){
@@ -7438,15 +7444,23 @@ var _LexLicense = (function(){
   }
 
   // Monta o painel na página de Configurações (id 'config')
+  let _mountDebounce = null;
   function mountPanel() {
     const onConfig = (typeof current !== 'undefined' && current === 'config');
     if (!onConfig) return;
     const content = document.getElementById('content'); if (!content) return;
+    // Se o painel já existe, apenas re-renderiza (sem recriar)
     if (document.getElementById('sync-panel')) { renderPanel(); return; }
-    const view = content.querySelector('.view') || content;
+    // Só insere depois que o .view estiver presente (página carregada)
+    const view = content.querySelector('.view');
+    if (!view) return;
     const wrap = document.createElement('div'); wrap.id = 'sync-panel'; wrap.style.maxWidth = '820px';
     view.appendChild(wrap);
     renderPanel();
+  }
+  function mountPanelDebounced() {
+    clearTimeout(_mountDebounce);
+    _mountDebounce = setTimeout(() => { try { mountPanel(); } catch (e) {} }, 120);
   }
 
   /* ---------- Boot ---------- */
@@ -7457,7 +7471,7 @@ var _LexLicense = (function(){
     _booting = true;
     loadCfg();
     const content = document.getElementById('content');
-    if (content) { const obs = new MutationObserver(() => { try { mountPanel(); } catch (e) {} }); obs.observe(content, { childList: true, subtree: true }); }
+    if (content) { const obs = new MutationObserver(() => { try { mountPanelDebounced(); } catch (e) {} }); obs.observe(content, { childList: true, subtree: false }); }
     mountPanel();
     setStatus(enabled ? 'Sincronizado' : (TOKEN ? 'Pausada' : 'Não configurado'));
     booted = true;
