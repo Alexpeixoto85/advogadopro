@@ -831,6 +831,11 @@ tbody tr:last-child td{border-bottom:none}
         <div class="search-panel" id="searchPanel"><div class="search-results" id="searchResults"></div></div>
       </div>
       <div class="topbar-date"><b id="dateTop"></b><span id="timeTop"></span></div>
+      <!-- Indicador de sincronização na nuvem (visível quando conectado) -->
+      <div id="syncChip" style="display:none;align-items:center;gap:6px;padding:5px 10px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;flex-shrink:0;transition:border-color .15s" onclick="if(typeof goto==='function')goto('config')" title="Status da sincronização">
+        <span id="syncChipDot" style="width:7px;height:7px;border-radius:50%;background:var(--text-3);flex-shrink:0;transition:background .3s"></span>
+        <span id="syncChipLabel" style="font-size:11.5px;font-weight:600;color:var(--text-2);white-space:nowrap">Sync</span>
+      </div>
       <div class="notif-wrap">
         <button class="notif-btn" id="notifBtn" title="Notificações">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -6930,6 +6935,11 @@ var _LexLicense = (function(){
   .cfg-visual-grid{ grid-template-columns:1fr !important; }
   .set-card{ padding:18px 16px; }
   .set-card h3{ font-size:16px; }
+  #syncChip .syncChipLabel{ display:none; }   /* mobile: mostra só o dot */
+}
+@keyframes syncPulse{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:.4; transform:scale(1.35); }
 }
 
 /* Barra de navegação inferior (mobile) */
@@ -7173,7 +7183,7 @@ var _LexLicense = (function(){
   let branchResolved = false;
   const MANIFEST = 'lexora-sync.json';
   const STORE_DIR = 'stores/';
-  const PUSH_DELAY = 900;
+  const PUSH_DELAY = 400;
   const LIGHT_STORE_LIMIT = 512 * 1024;
   const CHUNK_LIMIT = 7 * 1024 * 1024;
   const LIGHT_LS_LIMIT = 200 * 1024;
@@ -7486,7 +7496,45 @@ var _LexLicense = (function(){
     return newCommit.sha;
   }
 
-  function setStatus(s) { statusText = s; const e = document.getElementById('sync-status'); if (e) e.textContent = s; }
+  function setStatus(s) {
+    statusText = s;
+    const e = document.getElementById('sync-status');
+    if (e) e.textContent = s;
+    // Atualiza chip no topbar
+    const chip = document.getElementById('syncChip');
+    const dot  = document.getElementById('syncChipDot');
+    const lbl  = document.getElementById('syncChipLabel');
+    if (!chip || !dot || !lbl) return;
+    if (!enabled && !TOKEN) { chip.style.display = 'none'; return; }
+    chip.style.display = 'flex';
+    const sl = s.toLowerCase();
+    if (sl.includes('enviando') || sl.includes('baixando') || sl.includes('verificando') || sl.includes('conectando')) {
+      dot.style.background = 'var(--amber)';
+      dot.style.animation  = 'syncPulse 1s infinite';
+      lbl.style.color      = 'var(--amber)';
+      lbl.textContent      = s;
+    } else if (sl.includes('erro') || sl.includes('conflito') || sl.includes('falha')) {
+      dot.style.background = 'var(--red)';
+      dot.style.animation  = '';
+      lbl.style.color      = 'var(--red)';
+      lbl.textContent      = 'Erro sync';
+    } else if (sl.includes('pausada') || sl.includes('pendente') || sl.includes('alterações')) {
+      dot.style.background = 'var(--amber)';
+      dot.style.animation  = '';
+      lbl.style.color      = 'var(--amber)';
+      lbl.textContent      = 'Pendente…';
+    } else if (sl.includes('sincronizado')) {
+      dot.style.background = 'var(--green)';
+      dot.style.animation  = '';
+      lbl.style.color      = 'var(--green)';
+      lbl.textContent      = 'Sincronizado';
+    } else {
+      dot.style.background = 'var(--text-3)';
+      dot.style.animation  = '';
+      lbl.style.color      = 'var(--text-2)';
+      lbl.textContent      = s;
+    }
+  }
 
   /* ---------- Baixar (pull) ---------- */
   async function doPull(force) {
@@ -7681,8 +7729,8 @@ var _LexLicense = (function(){
     if (!enabled) {
       host.innerHTML =
         '<div class="set-card">'
-        + '<h3>☁️ Sincronização na nuvem</h3>'
-        + '<p class="desc" style="font-size:13px;color:var(--text-2);margin-bottom:14px;">Mantém seus dados iguais em todos os aparelhos usando um <strong>repositório privado do GitHub</strong> (grátis), inclusive anexos e logos. Baixa ao abrir e envia automaticamente a cada alteração.</p>'
+        + '<h3>☁️ Sincronização automática na nuvem</h3>'
+        + '<p class="desc" style="font-size:13px;color:var(--text-2);margin-bottom:14px;">Mantém seus dados <strong>iguais em todos os aparelhos</strong> usando um repositório privado do GitHub (grátis). Envia automaticamente a cada alteração e verifica novas atualizações a cada 30 segundos — sem precisar clicar em nenhum botão.</p>'
         + '<ol style="font-size:13px;color:var(--text-2);padding-left:18px;line-height:1.7;margin:0 0 12px;">'
         + '<li>Tenha uma conta no <strong>github.com</strong>.</li>'
         + '<li>Abra <a href="https://github.com/settings/tokens/new?scopes=repo&description=Lexora" target="_blank" rel="noopener" style="color:var(--brass-deep);font-weight:600;">este link</a> para gerar um <strong>token</strong> (escopo <em>repo</em> já marcado) e clique em <em>Generate token</em>.</li>'
@@ -7690,7 +7738,7 @@ var _LexLicense = (function(){
         + '<li>Nos <strong>outros aparelhos</strong>, cole o <strong>mesmo token</strong>.</li>'
         + '</ol>'
         + '<input type="password" id="sync-token" placeholder="ghp_..." autocomplete="off" style="width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);font-family:monospace;font-size:13.5px;outline:none;margin-bottom:10px;">'
-        + '<button type="button" id="sync-connect-btn" class="btn btn-primary" style="' + BTN + '">Conectar e sincronizar</button>'
+        + '<button type="button" id="sync-connect-btn" class="btn btn-primary" style="' + BTN + '">Conectar — ativar sincronização automática</button>'
         + '<div style="background:var(--amber-bg);border:1px solid rgba(192,138,42,.3);color:#8a6420;border-radius:9px;padding:10px 12px;margin-top:12px;font-size:12.5px;">⚠️ Ao conectar a uma sincronização que já existe, os dados da nuvem <strong>substituem</strong> os locais. Conecte primeiro o aparelho com os dados certos. Um repositório privado <code>' + REPO_DEFAULT + '</code> será criado automaticamente.</div>'
         + errHtml()
         + '</div>';
@@ -7700,24 +7748,48 @@ var _LexLicense = (function(){
       if (ti) ti.onkeydown = (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); connect(ti.value || ''); } };
       return;
     }
+
+    // Monta badge de status colorido
+    const sl = statusText.toLowerCase();
+    let dotColor = 'var(--green)', dotAnim = '', statusColor = 'var(--green)';
+    if (sl.includes('enviando') || sl.includes('baixando') || sl.includes('verificando') || sl.includes('conectando')) {
+      dotColor = 'var(--amber)'; dotAnim = 'animation:syncPulse 1s infinite'; statusColor = 'var(--amber)';
+    } else if (sl.includes('erro') || sl.includes('conflito') || sl.includes('falha')) {
+      dotColor = 'var(--red)'; statusColor = 'var(--red)';
+    } else if (sl.includes('pausada') || sl.includes('pendente') || sl.includes('alterações')) {
+      dotColor = 'var(--amber)'; statusColor = 'var(--amber)';
+    }
+
     host.innerHTML =
       '<div class="set-card">'
-      + '<h3>☁️ Sincronização na nuvem</h3>'
+      + '<h3>☁️ Sincronização automática</h3>'
       + (conflict
         ? '<div style="background:var(--red-bg);border:1px solid rgba(178,58,58,.25);color:var(--red);border-radius:9px;padding:11px 12px;font-size:13px;margin:6px 0 12px;"><strong>⚠️ Conflito.</strong> A nuvem foi alterada por outro aparelho depois da sua última sincronização. Escolha qual versão vale:'
           + '<div style="display:flex;gap:8px;margin-top:8px;"><button type="button" id="sync-resolve-pull" class="btn btn-primary" style="flex:1;justify-content:center;">Usar a da nuvem</button><button type="button" id="sync-resolve-push" class="btn btn-ghost" style="flex:1;justify-content:center;color:var(--red);">Usar a deste aparelho</button></div></div>'
         : '')
-      + '<div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 14px;margin:6px 0 14px;">'
-      + '<div><div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Status</div><div id="sync-status" style="font-weight:700;color:var(--ink);">' + statusText + '</div></div>'
-      + '<div style="text-align:right;"><div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Último envio</div><div style="font-weight:600;font-size:13px;color:var(--ink);">' + fmtWhen(lastPushedAt) + '</div></div>'
+      // Status card
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 14px">'
+      + '<div style="background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:12px 14px">'
+      + '<div style="font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Status</div>'
+      + '<div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';flex-shrink:0;' + dotAnim + '"></span>'
+      + '<span id="sync-status" style="font-weight:700;color:' + statusColor + ';font-size:13.5px">' + statusText + '</span></div></div>'
+      + '<div style="background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:12px 14px">'
+      + '<div style="font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Último envio</div>'
+      + '<div style="font-weight:600;font-size:13px;color:var(--ink)">' + fmtWhen(lastPushedAt) + '</div></div>'
       + '</div>'
+      // Info sobre funcionamento automático
+      + '<div style="background:var(--green-bg);border:1px solid rgba(63,125,84,.25);border-radius:9px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--green);display:flex;gap:8px;align-items:flex-start">'
+      + '<span style="font-size:15px;flex-shrink:0">✅</span>'
+      + '<span><strong>Sincronização totalmente automática</strong> — envia em até 0,4s após cada alteração e verifica a nuvem a cada 30s. Nenhuma ação necessária.</span></div>'
       + ((OWNER && REPO) ? '<div style="font-size:12.5px;color:var(--text-2);margin-bottom:12px;">Repositório: <code>' + OWNER + '/' + REPO + '</code> (privado)</div>' : '')
-      + '<button type="button" id="sync-now-btn" class="btn btn-primary" style="' + BTN + '"' + (busy ? ' disabled' : '') + '>Sincronizar agora</button>'
-      + '<p class="desc" style="font-size:12.5px;color:var(--text-2);margin:10px 0 0;">Envio automático e imediato a cada alteração, e baixa automática ao abrir o app ou voltar para ele. Resolução por "último a salvar vence".</p>'
-      + (syncedHeavy && syncedHeavy.length ? '<div style="background:var(--green-bg);border:1px solid rgba(63,125,84,.3);color:var(--green);border-radius:9px;padding:10px 12px;margin-top:10px;font-size:12.5px;">Arquivos grandes sincronizando (' + syncedHeavy.join(', ') + ') — anexos e logos vão para a nuvem junto com o resto.</div>' : '')
-      + '<div style="display:flex;gap:8px;margin-top:14px;">'
-      + '<button type="button" id="sync-pause-btn" class="btn btn-ghost" style="flex:1;justify-content:center;">Pausar</button>'
-      + '<button type="button" id="sync-forget-btn" class="btn btn-ghost" style="flex:1;justify-content:center;color:var(--red);">Remover token</button>'
+      + (syncedHeavy && syncedHeavy.length ? '<div style="background:var(--blue-bg);border:1px solid rgba(58,90,155,.2);color:var(--blue);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;">📎 Arquivos grandes em sincronia: ' + syncedHeavy.join(', ') + '</div>' : '')
+      // Botão de sync manual como opção secundária
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'
+      + '<button type="button" id="sync-now-btn" class="btn btn-ghost" style="flex:1;min-width:140px;justify-content:center;font-size:13px" ' + (busy ? 'disabled' : '') + '>'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>'
+      + (busy ? 'Sincronizando…' : 'Forçar sincronização') + '</button>'
+      + '<button type="button" id="sync-pause-btn" class="btn btn-ghost" style="flex:1;min-width:140px;justify-content:center;font-size:13px">Pausar</button>'
+      + '<button type="button" id="sync-forget-btn" class="btn btn-ghost" style="flex:1;min-width:140px;justify-content:center;font-size:13px;color:var(--red)">Remover token</button>'
       + '</div>'
       + errHtml()
       + '</div>';
@@ -7768,9 +7840,21 @@ var _LexLicense = (function(){
   document.addEventListener('visibilitychange', () => {
     if (!enabled || !booted) return;
     if (document.hidden) { if (dirty && !busy) doPush(false); }
-    else if (!busy) doPull(false);
+    else { if (!busy) doPull(false); }
   });
-  setInterval(() => { if (enabled && booted && !document.hidden && !busy && !dirty) doPull(false); }, 180000);
+
+  // Pull automático a cada 30 segundos (detecta alterações de outros dispositivos)
+  setInterval(() => {
+    if (enabled && booted && !document.hidden && !busy) doPull(false);
+  }, 30000);
+
+  // Re-tenta push pendente a cada 15s se houver dados sujos e não estiver ocupado
+  setInterval(() => {
+    if (enabled && booted && dirty && !busy && !conflict) {
+      clearTimeout(pushTimer);
+      pushTimer = setTimeout(() => doPush(false), 400);
+    }
+  }, 15000);
 
 })();
 </script>
