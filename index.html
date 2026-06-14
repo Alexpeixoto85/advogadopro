@@ -359,17 +359,42 @@ tbody tr:last-child td{border-bottom:none}
   .backdrop-blur.show{display:block;position:fixed;inset:0;background:rgba(22,36,63,.4);z-index:55}
   .hamburger{display:grid}
   .topbar-search{display:none}
-  .content{padding:18px}
+  .content{padding:14px}
   .form-grid{grid-template-columns:1fr}
   .field.col-2{grid-column:span 1}
-  .topbar{padding:0 16px;gap:10px}
-  .page-head h1{font-size:21px}
+  .topbar{padding:0 14px;gap:8px}
+  .page-head h1{font-size:19px}
   .topbar-date{display:none}
   .doc-type-tabs{grid-template-columns:1fr 1fr}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-  .fin-grid{grid-template-columns:1fr 1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .fin-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .dash-grid{gap:12px}
+  .kanban{grid-template-columns:1fr;gap:10px}
+  .time-summary{grid-template-columns:1fr 1fr;gap:10px}
+  .dos-grid{grid-template-columns:1fr}
+  .rep-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .fin-adv-grid{grid-template-columns:1fr;gap:10px}
+  .client360-grid{grid-template-columns:1fr}
+  .toolbar{gap:8px;margin-bottom:14px}
+  .toolbar .btn-primary{padding:10px 14px;font-size:13px}
+  .panel-head{padding:14px 16px 12px}
+  .panel-body{padding:6px 8px 10px}
+  .kpi{padding:16px}
+  .kpi-val{font-size:24px;margin-top:10px}
+  .section-title{font-size:16px}
 }
-@media(max-width:520px){.kpi-grid{grid-template-columns:1fr}.fin-grid{grid-template-columns:1fr}}
+@media(max-width:520px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .fin-grid{grid-template-columns:1fr}
+  .time-summary{grid-template-columns:1fr}
+  .rep-grid{grid-template-columns:1fr}
+  .doc-type-tabs{grid-template-columns:1fr}
+  .toolbar{flex-direction:column;align-items:stretch}
+  .toolbar .ml-auto{margin-left:0}
+  .toolbar .search-box{max-width:none}
+  .toolbar .btn{justify-content:center}
+  .content{padding:12px}
+}
 
 /* ===== Auth screen ===== */
 #authScreen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
@@ -1100,34 +1125,50 @@ RENDER.clientes=async function(){
   const proc=await dbAll('processos');
   const f=cliFilter.toLowerCase();
   const list=cli.filter(c=>!f||(c.nome+' '+(c.cpfCnpj||'')+' '+(c.email||'')).toLowerCase().includes(f));
-  $('#content').innerHTML=`<div class="view">
+  const wppIco=`<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.258 2 2 6.258 2 11.5c0 1.965.578 3.79 1.569 5.317L2.046 22l5.299-1.495A9.447 9.447 0 0 0 11.5 21c5.243 0 9.5-4.257 9.5-9.5S16.743 2 11.5 2z"/></svg>`;
+  const ico360=svg('<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3M15.5 3.5A9 9 0 0 1 21 12"/>',1.8,17);
+  const cliCards=list.map(c=>{const np=proc.filter(p=>p.clienteId===c.id).length;return `
+    <div class="cli-card" style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s" data-view="${c.id}">
+      <div class="avatar ${c.tipo==='PJ'?'pj':''}" style="flex-shrink:0">${esc(initials(c.nome))}</div>
+      <div style="flex:1;min-width:0">
+        <div class="cell-strong" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.nome)}</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:3px">
+          <span class="cell-sub">${c.tipo==='PJ'?'Pessoa Jurídica':'Pessoa Física'}</span>
+          ${c.telefone?`<span class="cell-sub">· ${esc(c.telefone)}</span>`:''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap">
+          <span class="badge bg-blue" style="font-size:11px"><span class="bdot"></span>${np} ${np===1?'processo':'processos'}</span>
+          ${c.cpfCnpj?`<span class="cell-mono" style="font-size:11.5px;color:var(--text-3)">${esc(c.cpfCnpj)}</span>`:''}
+        </div>
+      </div>
+      <div class="row-actions" style="flex-shrink:0">
+        <button class="icon-btn btn360" data-c360="${c.id}" title="Perfil 360°" style="color:var(--brass-deep)">${ico360}</button>
+        <button class="icon-btn" data-wpp="${c.id}" title="${c.telefone?'WhatsApp':'Sem telefone'}" style="color:#1da851"${c.telefone?'':' disabled'}>${wppIco}</button>
+        <button class="icon-btn" data-edit="${c.id}" title="Editar">${svg(ICON.edit)}</button>
+        <button class="icon-btn danger" data-del="${c.id}" title="Excluir" onclick="event.stopPropagation()">${svg(ICON.trash)}</button>
+      </div>
+    </div>`;}).join('');
+  $('#content').innerHTML=`<style>
+    .cli-card:hover{box-shadow:var(--shadow);border-color:var(--brass)}
+    @media(max-width:520px){
+      .cli-card .row-actions .icon-btn:not([data-wpp]):not([data-edit]):not([data-del]):not(.btn360){display:none}
+      .cli-card .row-actions{gap:4px}
+    }
+  </style>
+  <div class="view">
     <div class="toolbar">
       <div class="search-box">${svg('<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>')}<input id="fCli" placeholder="Buscar por nome, CPF/CNPJ ou e-mail" value="${esc(cliFilter)}"></div>
       <button class="btn btn-primary ml-auto" id="addCli">${svg(ICON.plus)} Novo cliente</button>
     </div>
-    ${list.length?`<div class="table-wrap"><div class="tbl-scroll"><table>
-      <thead><tr><th>Cliente</th><th>Documento</th><th>Contato</th><th>Processos</th><th></th></tr></thead>
-      <tbody>${list.map(c=>{const np=proc.filter(p=>p.clienteId===c.id).length;return `<tr>
-        <td><div class="with-av"><div class="avatar ${c.tipo==='PJ'?'pj':''}">${esc(initials(c.nome))}</div>
-          <div><div class="cell-strong">${esc(c.nome)}</div><div class="cell-sub">${c.tipo==='PJ'?'Pessoa Jurídica':'Pessoa Física'}</div></div></div></td>
-        <td><span class="cell-mono">${esc(c.cpfCnpj||'—')}</span></td>
-        <td><div>${esc(c.telefone||'—')}</div><div class="cell-sub">${esc(c.email||'')}</div></td>
-        <td><span class="badge bg-blue"><span class="bdot"></span>${np} ${np===1?'processo':'processos'}</span></td>
-        <td><div class="row-actions">
-          <button class="icon-btn btn360" data-c360="${c.id}" title="Perfil 360°" style="color:var(--brass-deep)">${svg('<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3M15.5 3.5A9 9 0 0 1 21 12"/>',1.8,17)}</button>
-          <button class="icon-btn" data-wpp="${c.id}" title="${c.telefone?'Enviar WhatsApp':'Sem telefone cadastrado'}" style="color:#1da851"${c.telefone?'':' disabled'}><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.5 2C6.258 2 2 6.258 2 11.5c0 1.965.578 3.79 1.569 5.317L2.046 22l5.299-1.495A9.447 9.447 0 0 0 11.5 21c5.243 0 9.5-4.257 9.5-9.5S16.743 2 11.5 2z"/></svg></button>
-          <button class="icon-btn" data-view="${c.id}" title="Ver">${svg(ICON.eye)}</button>
-          <button class="icon-btn" data-edit="${c.id}" title="Editar">${svg(ICON.edit)}</button>
-          <button class="icon-btn danger" data-del="${c.id}" title="Excluir">${svg(ICON.trash)}</button>
-        </div></td></tr>`;}).join('')}</tbody></table></div></div>`
+    ${list.length?`<div style="display:flex;flex-direction:column;gap:10px">${cliCards}</div>`
     :emptyState('clients','Nenhum cliente cadastrado','Cadastre seu primeiro cliente para começar a organizar processos e honorários.','Novo cliente','addCli')}
   </div>`;
   $('#fCli').oninput=e=>{cliFilter=e.target.value;clearTimeout(window._t);window._t=setTimeout(()=>RENDER.clientes(),200);};
   $$('#addCli').forEach(b=>b.onclick=()=>cliForm());
-  $$('[data-edit]').forEach(b=>b.onclick=()=>cliForm(b.dataset.edit));
-  $$('[data-del]').forEach(b=>b.onclick=()=>confirmDel('clientes',b.dataset.del,'cliente',RENDER.clientes));
+  $$('[data-edit]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cliForm(b.dataset.edit);});
+  $$('[data-del]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();confirmDel('clientes',b.dataset.del,'cliente',RENDER.clientes);});
   $$('[data-view]').forEach(b=>b.onclick=()=>cliDetail(b.dataset.view));
-  $$('[data-wpp]').forEach(b=>b.onclick=()=>{ if(!b.disabled) waCompose(b.dataset.wpp); });
+  $$('[data-wpp]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();if(!b.disabled) waCompose(b.dataset.wpp);});
   $$('[data-c360]').forEach(b=>b.onclick=e=>{e.stopPropagation();viewCliente360(b.dataset.c360);});
   $('.view').classList.add('active');
 };
@@ -1204,32 +1245,46 @@ RENDER.processos=async function(){
   const cli=await dbAll('clientes');
   const f=procFilter.toLowerCase();
   const list=proc.filter(p=>(!f||((p.numero||'')+' '+(p.tipoAcao||'')+' '+(p.parteContraria||'')+' '+(cliName(cli,p.clienteId))).toLowerCase().includes(f))&&(!procStatusF||p.status===procStatusF));
-  $('#content').innerHTML=`<div class="view">
+  const procCards=list.map(p=>`
+    <div class="proc-card" style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:box-shadow .15s,border-color .15s" data-view="${p.id}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div class="cell-strong" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.tipoAcao||'Ação')}</div>
+          <div class="cell-mono" style="font-size:12px;margin-top:2px">${esc(p.numero||'sem nº')}</div>
+        </div>
+        <div style="flex-shrink:0">${statusBadge(p.status)}</div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:13px;color:var(--text-2)">${esc(cliName(cli,p.clienteId))}</span>
+        ${p.parteContraria?`<span style="font-size:12px;color:var(--text-3)">vs ${esc(p.parteContraria)}</span>`:''}
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge bg-gray" style="font-size:11px"><span class="bdot"></span>${esc(p.area||'—')}</span>
+          ${p.valorCausa?`<span style="font-size:12px;color:var(--text-2)">${moneyBR(p.valorCausa)}</span>`:''}
+        </div>
+        <div class="row-actions">
+          <button class="icon-btn" data-view="${p.id}" title="Ver" onclick="event.stopPropagation()">${svg(ICON.eye)}</button>
+          <button class="icon-btn" data-edit="${p.id}" title="Editar" onclick="event.stopPropagation()">${svg(ICON.edit)}</button>
+          <button class="icon-btn danger" data-del="${p.id}" title="Excluir" onclick="event.stopPropagation()">${svg(ICON.trash)}</button>
+        </div>
+      </div>
+    </div>`).join('');
+  $('#content').innerHTML=`<style>.proc-card:hover{box-shadow:var(--shadow);border-color:var(--brass)}</style>
+  <div class="view">
     <div class="toolbar">
       <div class="search-box">${svg('<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>')}<input id="fProc" placeholder="Buscar número, ação, cliente ou parte contrária" value="${esc(procFilter)}"></div>
       <select class="filter-sel" id="fStatus"><option value="">Todos os status</option>${PROC_STATUS.map(s=>`<option ${procStatusF===s?'selected':''}>${s}</option>`).join('')}</select>
       <button class="btn btn-primary ml-auto" id="addProc">${svg(ICON.plus)} Novo processo</button>
     </div>
-    ${list.length?`<div class="table-wrap"><div class="tbl-scroll"><table>
-      <thead><tr><th>Processo</th><th>Cliente</th><th>Área</th><th>Status</th><th>Valor da causa</th><th></th></tr></thead>
-      <tbody>${list.map(p=>`<tr>
-        <td><div class="cell-strong">${esc(p.tipoAcao||'Ação')}</div><div class="cell-mono">${esc(p.numero||'sem nº')}</div></td>
-        <td><div>${esc(cliName(cli,p.clienteId))}</div><div class="cell-sub">vs ${esc(p.parteContraria||'—')}</div></td>
-        <td><span class="badge bg-gray"><span class="bdot"></span>${esc(p.area||'—')}</span></td>
-        <td>${statusBadge(p.status)}</td>
-        <td>${p.valorCausa?moneyBR(p.valorCausa):'—'}</td>
-        <td><div class="row-actions">
-          <button class="icon-btn" data-view="${p.id}">${svg(ICON.eye)}</button>
-          <button class="icon-btn" data-edit="${p.id}">${svg(ICON.edit)}</button>
-          <button class="icon-btn danger" data-del="${p.id}">${svg(ICON.trash)}</button>
-        </div></td></tr>`).join('')}</tbody></table></div></div>`
+    ${list.length?`<div style="display:flex;flex-direction:column;gap:10px">${procCards}</div>`
     :emptyState('cases','Nenhum processo cadastrado','Registre processos para acompanhar status, prazos e movimentações.','Novo processo','addProc')}
   </div>`;
   $('#fProc').oninput=e=>{procFilter=e.target.value;clearTimeout(window._t);window._t=setTimeout(()=>RENDER.processos(),200);};
   $('#fStatus').onchange=e=>{procStatusF=e.target.value;RENDER.processos();};
   $$('#addProc').forEach(b=>b.onclick=()=>procForm());
-  $$('[data-edit]').forEach(b=>b.onclick=()=>procForm(b.dataset.edit));
-  $$('[data-del]').forEach(b=>b.onclick=()=>confirmDel('processos',b.dataset.del,'processo',RENDER.processos));
+  $$('[data-edit]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();procForm(b.dataset.edit);});
+  $$('[data-del]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();confirmDel('processos',b.dataset.del,'processo',RENDER.processos);});
   $$('[data-view]').forEach(b=>b.onclick=()=>procDetail(b.dataset.view));
   $('.view').classList.add('active');
 };
@@ -1315,6 +1370,29 @@ RENDER.prazos=async function(){
   else if(prazoF==='vencidos')list=list.filter(p=>p.status!=='cumprido'&&daysUntil(p.dataPrazo)<0);
   list.sort((a,b)=>(a.dataPrazo||'9').localeCompare(b.dataPrazo||'9'));
   const cnt={abertos:prazos.filter(p=>p.status!=='cumprido').length,vencidos:prazos.filter(p=>p.status!=='cumprido'&&daysUntil(p.dataPrazo)<0).length,cumpridos:prazos.filter(p=>p.status==='cumprido').length};
+  const prazoCards=list.map(p=>{const d=daysUntil(p.dataPrazo);const done=p.status==='cumprido';
+    let sit=done?'<span class="badge bg-green"><span class="bdot"></span>Cumprido</span>':d<0?'<span class="badge bg-red"><span class="bdot"></span>Vencido</span>':d===0?'<span class="badge bg-red"><span class="bdot"></span>Hoje</span>':d<=3?`<span class="badge bg-amber"><span class="bdot"></span>${d} dias</span>`:`<span class="badge bg-blue"><span class="bdot"></span>${d} dias</span>`;
+    return `<div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;${done?'opacity:.65':''}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div class="cell-strong" style="margin-bottom:3px">${esc(p.descricao)}</div>
+          ${p.responsavel?`<div class="cell-sub">Resp.: ${esc(p.responsavel)}</div>`:''}
+        </div>
+        <div style="flex-shrink:0">${sit}</div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="badge bg-gray" style="font-size:11px"><span class="bdot"></span>${esc(p.tipo||'Prazo')}</span>
+          ${p.processoId?`<span style="font-size:12px;color:var(--text-2)">${esc(procLabel(proc,p.processoId)||'')}</span>`:''}
+          <span style="font-size:12.5px;font-weight:600;color:var(--ink)">${fmtDate(p.dataPrazo)}</span>
+        </div>
+        <div class="row-actions">
+          ${done?'':`<button class="icon-btn" data-done="${p.id}" title="Marcar cumprido">${svg(ICON.check)}</button>`}
+          <button class="icon-btn" data-edit="${p.id}">${svg(ICON.edit)}</button>
+          <button class="icon-btn danger" data-del="${p.id}">${svg(ICON.trash)}</button>
+        </div>
+      </div>
+    </div>`;}).join('');
   $('#content').innerHTML=`<div class="view">
     <div class="toolbar">
       <select class="filter-sel" id="fPrazo">
@@ -1325,21 +1403,7 @@ RENDER.prazos=async function(){
       </select>
       <button class="btn btn-primary ml-auto" id="addPrazo">${svg(ICON.plus)} Novo prazo</button>
     </div>
-    ${list.length?`<div class="table-wrap"><div class="tbl-scroll"><table>
-      <thead><tr><th>Prazo / intimação</th><th>Processo</th><th>Tipo</th><th>Vencimento</th><th>Situação</th><th></th></tr></thead>
-      <tbody>${list.map(p=>{const d=daysUntil(p.dataPrazo);const done=p.status==='cumprido';
-        let sit=done?'<span class="badge bg-green"><span class="bdot"></span>Cumprido</span>':d<0?'<span class="badge bg-red"><span class="bdot"></span>Vencido</span>':d===0?'<span class="badge bg-red"><span class="bdot"></span>Hoje</span>':d<=3?`<span class="badge bg-amber"><span class="bdot"></span>${d} dias</span>`:`<span class="badge bg-blue"><span class="bdot"></span>${d} dias</span>`;
-        return `<tr style="${done?'opacity:.62':''}">
-        <td><div class="cell-strong">${esc(p.descricao)}</div>${p.responsavel?`<div class="cell-sub">Resp.: ${esc(p.responsavel)}</div>`:''}</td>
-        <td><div>${esc(procLabel(proc,p.processoId)||'—')}</div></td>
-        <td><span class="badge bg-gray"><span class="bdot"></span>${esc(p.tipo||'Prazo')}</span></td>
-        <td class="cell-strong">${fmtDate(p.dataPrazo)}</td>
-        <td>${sit}</td>
-        <td><div class="row-actions">
-          ${done?'':`<button class="icon-btn" data-done="${p.id}" title="Marcar cumprido">${svg(ICON.check)}</button>`}
-          <button class="icon-btn" data-edit="${p.id}">${svg(ICON.edit)}</button>
-          <button class="icon-btn danger" data-del="${p.id}">${svg(ICON.trash)}</button>
-        </div></td></tr>`;}).join('')}</tbody></table></div></div>`
+    ${list.length?`<div style="display:flex;flex-direction:column;gap:10px">${prazoCards}</div>`
     :emptyState('deadline','Nenhum prazo neste filtro','Cadastre prazos processuais e intimações para nunca perder uma data fatal.','Novo prazo','addPrazo')}
   </div>`;
   $('#fPrazo').onchange=e=>{prazoF=e.target.value;RENDER.prazos();};
@@ -1425,17 +1489,31 @@ RENDER.agenda=async function(){
     .cal-cell.today .cal-num{color:var(--brass-deep)}
     .cal-ev{font-size:10.5px;padding:2px 6px;border-radius:5px;margin-bottom:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600}
     .ev-aud{background:var(--red-bg);color:var(--red)} .ev-reu{background:var(--blue-bg);color:var(--blue)} .ev-pra{background:var(--amber-bg);color:var(--amber)} .ev-out{background:var(--green-bg);color:var(--green)}
-    @media(max-width:820px){.cal-cell{min-height:72px;padding:4px}.cal-ev{font-size:9px}}
+    .agenda-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px}
+    @media(max-width:820px){
+      .cal-cell{min-height:54px;padding:4px}
+      .cal-ev{font-size:9px;padding:1px 4px}
+      .cal-dow{font-size:9px;padding:4px 0}
+      .cal-grid{gap:3px}
+      .agenda-grid{grid-template-columns:1fr !important}
+      .agenda-toolbar{flex-wrap:nowrap !important}
+      .agenda-month-name{min-width:0 !important;font-size:15px !important}
+    }
+    @media(max-width:400px){
+      .cal-cell{min-height:42px;padding:3px}
+      .cal-num{font-size:11px}
+      .cal-ev{display:none}
+    }
   </style>
   <div class="view">
-    <div class="toolbar">
+    <div class="toolbar agenda-toolbar">
       <button class="btn btn-ghost btn-sm" id="prevM">‹</button>
-      <h3 class="section-title" style="margin:0;min-width:180px;text-align:center;text-transform:capitalize">${monthName}</h3>
+      <h3 class="section-title agenda-month-name" style="margin:0;min-width:180px;text-align:center;text-transform:capitalize">${monthName}</h3>
       <button class="btn btn-ghost btn-sm" id="nextM">›</button>
       <button class="btn btn-ghost btn-sm" id="todayM">Hoje</button>
       <button class="btn btn-primary ml-auto" id="addComp">${svg(ICON.plus)} Novo compromisso</button>
     </div>
-    <div class="dash-grid" style="grid-template-columns:1.7fr 1fr">
+    <div class="agenda-grid">
       <div class="panel"><div class="panel-body" style="padding:16px">
         <div class="cal-grid" style="margin-bottom:6px">${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cal-dow">${d}</div>`).join('')}</div>
         <div class="cal-grid">${cells}</div>
@@ -1563,6 +1641,32 @@ RENDER.financeiro=async function(){
   list.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
   const rec=fin.filter(f=>f.tipo==='receita'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
   const desp=fin.filter(f=>f.tipo==='despesa'&&f.status==='pago').reduce((s,f)=>s+Number(f.valor||0),0);
+  const finCards=list.map(f=>`
+    <div style="background:var(--surface);border:1px solid var(--line);border-left:3px solid ${f.tipo==='receita'?'var(--green)':'var(--red)'};border-radius:var(--radius);padding:14px 16px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div class="cell-strong" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f.descricao)}</div>
+          <div style="display:flex;gap:6px;margin-top:3px;flex-wrap:wrap;align-items:center">
+            <span class="cell-sub">${f.tipo==='receita'?'Receita':'Despesa'}</span>
+            ${f.categoria?`<span class="badge bg-gray" style="font-size:11px"><span class="bdot"></span>${esc(f.categoria)}</span>`:''}
+            <span class="cell-sub">${fmtDate(f.data)}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:700;font-family:var(--serif);font-size:16px;color:${f.tipo==='receita'?'var(--green)':'var(--red)'}">
+            ${f.tipo==='receita'?'+':'−'} ${moneyBR(f.valor)}
+          </div>
+          <div style="margin-top:4px">${f.status==='pago'?'<span class="badge bg-green" style="font-size:11px"><span class="bdot"></span>'+(f.tipo==='receita'?'Recebido':'Pago')+'</span>':'<span class="badge bg-amber" style="font-size:11px"><span class="bdot"></span>Pendente</span>'}</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span style="font-size:12.5px;color:var(--text-2)">${esc(cliName(cli,f.clienteId)!=='—'?cliName(cli,f.clienteId):procLabel(proc,f.processoId)||'—')}</span>
+        <div class="row-actions">
+          <button class="icon-btn" data-edit="${f.id}">${svg(ICON.edit)}</button>
+          <button class="icon-btn danger" data-del="${f.id}">${svg(ICON.trash)}</button>
+        </div>
+      </div>
+    </div>`).join('');
   $('#content').innerHTML=`<div class="view">
     <div class="fin-grid">
       <div class="fin-card in clickable${finF==='receita'?' active-filter':''}" data-finfilter="receita" role="button" tabindex="0"><div class="lbl"><span class="ico">${svg('<path d="M12 19V5M5 12l7-7 7 7"/>')}</span> Receitas recebidas</div><div class="val">${moneyBR(rec)}</div></div>
@@ -1574,19 +1678,7 @@ RENDER.financeiro=async function(){
       <input type="month" class="filter-sel" id="fMes" value="${finMonth}">
       <button class="btn btn-primary ml-auto" id="addFin">${svg(ICON.plus)} Novo lançamento</button>
     </div>
-    ${list.length?`<div class="table-wrap"><div class="tbl-scroll"><table>
-      <thead><tr><th>Descrição</th><th>Categoria</th><th>Cliente/Processo</th><th>Data</th><th>Situação</th><th style="text-align:right">Valor</th><th></th></tr></thead>
-      <tbody>${list.map(f=>`<tr>
-        <td><div class="cell-strong">${esc(f.descricao)}</div><div class="cell-sub">${f.tipo==='receita'?'Receita':'Despesa'}${f.formaPagamento?' · '+esc(f.formaPagamento):''}</div></td>
-        <td><span class="badge bg-gray"><span class="bdot"></span>${esc(f.categoria||'—')}</span></td>
-        <td>${esc(cliName(cli,f.clienteId)!=='—'?cliName(cli,f.clienteId):procLabel(proc,f.processoId)||'—')}</td>
-        <td>${fmtDate(f.data)}</td>
-        <td>${f.status==='pago'?'<span class="badge bg-green"><span class="bdot"></span>'+(f.tipo==='receita'?'Recebido':'Pago')+'</span>':'<span class="badge bg-amber"><span class="bdot"></span>Pendente</span>'}</td>
-        <td style="text-align:right;font-weight:700;color:${f.tipo==='receita'?'var(--green)':'var(--red)'}">${f.tipo==='receita'?'+':'−'} ${moneyBR(f.valor)}</td>
-        <td><div class="row-actions">
-          <button class="icon-btn" data-edit="${f.id}">${svg(ICON.edit)}</button>
-          <button class="icon-btn danger" data-del="${f.id}">${svg(ICON.trash)}</button>
-        </div></td></tr>`).join('')}</tbody></table></div></div>`
+    ${list.length?`<div style="display:flex;flex-direction:column;gap:10px">${finCards}</div>`
     :emptyState('finance','Nenhum lançamento financeiro','Registre honorários, custas e despesas para acompanhar a saúde financeira do escritório.','Novo lançamento','addFin')}
     <div id="finChartInline" class="fin-chart-wrap" style="margin-top:20px"></div>
   </div>`;
@@ -6786,6 +6878,114 @@ var _LexLicense = (function(){
   #mNav svg{ width:21px; height:21px; }
   .content{ padding-bottom:80px !important; }
   .timer-float{ bottom:calc(82px + env(safe-area-inset-bottom)) !important; }
+}
+
+/* Toolbar compacta no mobile */
+@media(max-width:820px){
+  .toolbar{ gap:8px; }
+  .toolbar .btn-primary{ white-space:nowrap; font-size:13px; padding:9px 14px; }
+  .search-box{ min-width:0; }
+}
+@media(max-width:480px){
+  .toolbar{ flex-direction:column; align-items:stretch; }
+  .toolbar .ml-auto{ margin-left:0; }
+  .toolbar .search-box{ max-width:none; flex:1; }
+  .toolbar .btn{ justify-content:center; }
+  .toolbar .filter-sel{ width:100%; }
+}
+
+/* KPI compacto no celular */
+@media(max-width:820px){
+  .kpi{ padding:14px; }
+  .kpi-val{ font-size:24px; margin-top:10px; }
+  .kpi-lbl{ font-size:11.5px; }
+  .kpi-ico{ width:36px; height:36px; }
+  .kpi-ico svg{ width:18px; height:18px; }
+}
+
+/* Kanban: cards legíveis no celular */
+@media(max-width:820px){
+  .kanban{ grid-template-columns:1fr; }
+  .kcol{ min-height:auto; }
+}
+
+/* Painel financeiro */
+@media(max-width:820px){
+  .fin-grid{ grid-template-columns:1fr 1fr; gap:10px; }
+  .fin-card{ padding:16px; }
+  .fin-card .val{ font-size:22px; }
+}
+@media(max-width:400px){
+  .fin-grid{ grid-template-columns:1fr; }
+}
+
+/* Calculadoras tabs */
+@media(max-width:820px){
+  .calc-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .calc-tab{ min-width:100px; flex:0 0 auto; font-size:12px; padding:11px 10px; }
+  .calc-res-grid{ grid-template-columns:1fr 1fr; }
+}
+@media(max-width:400px){
+  .calc-res-grid{ grid-template-columns:1fr; }
+}
+
+/* Dosimetria */
+@media(max-width:820px){
+  .dos-checkbox-grid{ grid-template-columns:1fr; }
+  .dos-res-grid{ grid-template-columns:1fr 1fr; }
+}
+
+/* Relatórios */
+@media(max-width:820px){
+  .rep-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+}
+@media(max-width:480px){
+  .rep-grid{ grid-template-columns:1fr; }
+}
+
+/* Panel heads e bodies compactos */
+@media(max-width:820px){
+  .panel-head{ padding:14px 16px 12px; }
+  .panel-head h3{ font-size:15px; }
+  .panel-body{ padding:6px 8px 10px; }
+  .tl-item{ padding:10px 10px; gap:10px; }
+  .tl-day{ font-size:16px; }
+}
+
+/* Toast em baixo no celular, acima do nav */
+@media(max-width:820px){
+  .toast-wrap{ bottom:calc(80px + env(safe-area-inset-bottom) + 12px); right:12px; left:12px; }
+  .toast{ max-width:none; }
+}
+
+/* Notif panel full-width no mobile */
+@media(max-width:480px){
+  .notif-panel{ width:calc(100vw - 28px); right:-8px; }
+}
+
+/* Contratospage e tabs de documentos */
+@media(max-width:820px){
+  .doc-type-tabs{ grid-template-columns:1fr 1fr; gap:8px; }
+  .doc-tab{ padding:12px 10px; gap:8px; }
+}
+@media(max-width:480px){
+  .doc-type-tabs{ grid-template-columns:1fr; }
+}
+
+/* Log entries compactas */
+@media(max-width:820px){
+  .log-entry{ flex-wrap:wrap; gap:6px; }
+  .log-time{ min-width:auto; width:100%; }
+}
+
+/* Time summary */
+@media(max-width:820px){
+  .time-summary{ grid-template-columns:1fr 1fr; }
+  .time-card{ padding:14px; }
+  .time-card .tc-val{ font-size:22px; }
+}
+@media(max-width:400px){
+  .time-summary{ grid-template-columns:1fr; }
 }
 </style>
 <script>
