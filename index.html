@@ -171,6 +171,8 @@ body.has-bg .content{background:transparent}
 .content{flex:1;overflow-y:auto;padding:28px;scroll-behavior:smooth}
 .view{display:none;animation:fade .35s ease}
 .view.active{display:block}
+/* Transição suave para atualizações automáticas em background */
+.view.active[style*="opacity"]{display:block !important}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* ===== Cards / KPI ===== */
@@ -1042,7 +1044,7 @@ function buildNav(){
   nav.innerHTML=html;
   $$('.nav-item',nav).forEach(b=>b.onclick=()=>{goto(b.dataset.page);closeSidebar();});
 }
-async function goto(id){
+async function goto(id, _opts){
   if(!userCanAccess(id)){toast('Acesso não permitido para o seu perfil','warn');return;}
   if(!RENDER[id]){toast('Módulo indisponível','warn');return;}
   current=id;const p=PAGES.find(x=>x.id===id);
@@ -1050,7 +1052,8 @@ async function goto(id){
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
   // sync bottom nav
   document.querySelectorAll('#mNav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
-  $('#content').scrollTop=0;
+  // só reseta scroll se for navegação manual (não atualização silenciosa)
+  if(!(_opts&&_opts.silent)) $('#content').scrollTop=0;
   await RENDER[id]();
   $('#content').querySelector('.view')?.classList.add('active');
 }
@@ -7364,11 +7367,136 @@ var _LexLicense = (function(){
     } finally { applying = false; }
   }
 
-  // Refresh suave: re-renderiza a página atual (os renderers releem o banco) — sem novo login.
-  function refreshApp() {
+  // ============================================================
+  //  MOTOR DE ATUALIZAÇÃO AUTOMÁTICA IMPERCEPTÍVEL
+  //  Estratégia:
+  //  1. Após pull, não faz reload — chama refreshSilent()
+  //  2. refreshSilent verifica se o usuário está interagindo
+  //     (modal aberto, input focado, scroll em andamento)
+  //  3. Se estiver interagindo → agenda para daqui a 2s
+  //  4. Se não estiver → re-renderiza o módulo atual com
+  //     fade suave (opacity 0→1, sem piscar o layout)
+  //  5. O chip de status no topbar atualiza em tempo real
+  //     sem depender do re-render do módulo
+  // ============================================================
+
+  let _refreshPending = false;
+  let _refreshTimer   = null;
+  let _lastScrollTop  = 0;
+  let _scrollMoving   = false;
+  let _scrollTimer    = null;
+
+  // Detecta scroll ativo
+  (function () {
+    const c = document.getElementById('content');
+    if (!c) return;
+    c.addEventListener('scroll', () => {
+      _scrollMoving = true;
+      clearTimeout(_scrollTimer);
+      _scrollTimer = setTimeout(() => { _scrollMoving = false; }, 800);
+    }, { passive: true });
+  })();
+
+  function _userIsBusy() {
+    // Modal aberto
+    const overlay = document.getElementById('overlay');
+    if (overlay && overlay.classList.contains('show')) return true;
+    // Input ou textarea com foco dentro do #content
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) return true;
+    // Scroll em andamento
+    if (_scrollMoving) return true;
+    return false;
+  }
+
+  function _doSilentRender() {
+    _refreshPending = false;
     try {
-      if (typeof goto === 'function' && typeof current !== 'undefined' && current) { goto(current); return; }
+      if (typeof goto !== 'function' || typeof current === 'undefined' || !current) return;
+      if (typeof RENDER === 'undefined' || !RENDER[current]) return;
+
+      const content = document.getElementById('content');
+      if (!content) return;
+
+      // Salva posição do scroll para restaurar depois
+      const savedScroll = content.scrollTop;
+
+      // Aplica fade-out suave no conteúdo visível
+      const view = content.querySelector('.view.active');
+      if (view) {
+        view.style.transition = 'opacity .15s ease';
+        view.style.opacity = '0.01';
+      }
+
+      setTimeout(async () => {
+        try {
+          // Chama render diretamente sem resetar scroll
+          await RENDER[current]();
+          // Ativa e faz fade-in da nova view
+          const newView = content.querySelector('.view');
+          if (newView) {
+            newView.classList.add('active');
+            newView.style.opacity = '0.01';
+            newView.style.transition = 'opacity .2s ease';
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                newView.style.opacity = '1';
+              });
+            });
+          }
+          // Restaura scroll exato
+          requestAnimationFrame(() => { content.scrollTop = savedScroll; });
+        } catch (e) {
+          console.warn('[live-update] render error:', e);
+          // Fallback silencioso: goto sem reset de scroll
+          try { await goto(current, { silent: true }); } catch (_) {}
+        }
+      }, 100);
+    } catch (e) { console.warn('[live-update] error:', e); }
+  }
+
+  function refreshSilent() {
+    clearTimeout(_refreshTimer);
+    if (_userIsBusy()) {
+      // Agenda nova tentativa em 2s
+      _refreshPending = true;
+      _refreshTimer = setTimeout(refreshSilent, 2000);
+      return;
+    }
+    _doSilentRender();
+  }
+
+  // Observa quando o overlay (modal) fecha para disparar atualização pendente
+  (function () {
+    const overlay = document.getElementById('overlay');
+    if (!overlay) return;
+    const obs = new MutationObserver(() => {
+      if (!overlay.classList.contains('show') && _refreshPending) {
+        clearTimeout(_refreshTimer);
+        _refreshTimer = setTimeout(refreshSilent, 600);
+      }
+    });
+    obs.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+  })();
+
+  // Observa quando inputs perdem foco para disparar atualização pendente
+  document.addEventListener('blur', () => {
+    if (_refreshPending) {
+      clearTimeout(_refreshTimer);
+      _refreshTimer = setTimeout(refreshSilent, 800);
+    }
+  }, true);
+
+  function refreshApp() {
+    // Tenta atualização imperceptível; cai para goto() se algo falhar
+    try {
+      if (typeof goto === 'function' && typeof current !== 'undefined' && current && typeof RENDER !== 'undefined' && RENDER[current]) {
+        refreshSilent();
+        return;
+      }
     } catch (e) {}
+    // Fallback: recarrega a rota atual sem reload de página
+    try { if (typeof goto === 'function' && typeof current !== 'undefined' && current) { goto(current); return; } } catch (e) {}
     try { location.reload(); } catch (e) {}
   }
 
@@ -7585,7 +7713,11 @@ var _LexLicense = (function(){
       }
     } catch (e) { console.warn(e); lastError = e.message; setStatus('Erro: ' + e.message); toast('Sincronização: ' + e.message, 'error'); }
     finally { busy = false; renderPanel(); }
-    if (changed) { toast('Dados atualizados da nuvem ✅', 'success'); refreshApp(); }
+    if (changed) {
+      // Toast discreto — não interrompe o que o usuário está fazendo
+      toast('☁️ Dados atualizados', 'ok');
+      refreshApp();
+    }
     return ok;
   }
 
